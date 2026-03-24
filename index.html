@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Saad Babezzine — Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:      #080c10;
+  --bg2:     #0d1520;
+  --surface: #111a26;
+  --surface2:#162030;
+  --accent:  #00e5ff;
+  --accent2: #7b61ff;
+  --accent3: #00ff9d;
+  --gold:    #ffd166;
+  --red:     #ff4d6d;
+  --text:    #e8f4f8;
+  --muted:   #6b8fa8;
+  --border:  #1e3048;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Outfit',sans-serif;
+  min-height:100vh;
+  cursor:none;
+  overflow-x:hidden;
+}
+
+/* grid bg */
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;
+  background-image:
+    linear-gradient(var(--border) 1px,transparent 1px),
+    linear-gradient(90deg,var(--border) 1px,transparent 1px);
+  background-size:60px 60px;
+  opacity:.25;pointer-events:none;
+}
+
+/* orbs */
+.orb{position:fixed;border-radius:50%;filter:blur(120px);pointer-events:none;z-index:0;}
+.orb1{width:600px;height:600px;background:rgba(0,229,255,.06);top:-200px;left:-200px;}
+.orb2{width:500px;height:500px;background:rgba(123,97,255,.07);bottom:-100px;right:-100px;}
+.orb3{width:350px;height:350px;background:rgba(0,255,157,.04);top:50%;left:50%;transform:translate(-50%,-50%);}
+
+/* cursor */
+#cursor{
+  position:fixed;width:10px;height:10px;
+  background:var(--accent);border-radius:50%;
+  pointer-events:none;z-index:9999;
+  transform:translate(-50%,-50%);
+  transition:width .2s,height .2s,background .2s,opacity .2s;
+  mix-blend-mode:screen;
+}
+#cursor.hover{width:36px;height:36px;background:var(--red);opacity:.5;}
+
+/* ── page system ── */
+.page{display:none;min-height:100vh;position:relative;z-index:1;}
+.page.active{display:block;animation:pageIn .45s ease;}
+@keyframes pageIn{
+  from{opacity:0;transform:translateY(18px);}
+  to  {opacity:1;transform:translateY(0);}
+}
+
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px 64px;
+  background:rgba(8,12,16,.88);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+}
+.nav-logo{
+  font-family:'Cormorant Garamond',serif;
+  font-size:22px;font-weight:600;
+  color:var(--text);text-decoration:none;cursor:none;
+  letter-spacing:1px;
+}
+.nav-logo em{color:var(--accent);font-style:italic;}
+
+.nav-links{display:flex;gap:36px;list-style:none;align-items:center;}
+.nav-links a{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;color:var(--muted);
+  text-decoration:none;letter-spacing:2px;
+  text-transform:uppercase;cursor:none;
+  transition:color .2s;position:relative;
+}
+.nav-links a::after{
+  content:'';position:absolute;bottom:-3px;left:0;
+  width:0;height:1px;background:var(--accent);transition:width .3s;
+}
+.nav-links a:hover{color:var(--accent);}
+.nav-links a:hover::after{width:100%;}
+
+.nav-cta{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;letter-spacing:2px;
+  padding:10px 22px;
+  background:transparent;color:var(--accent);
+  border:1px solid var(--accent);cursor:none;
+  text-transform:uppercase;text-decoration:none;
+  transition:all .2s;
+}
+.nav-cta:hover{background:var(--accent);color:var(--bg);}
+
+/* ── shared helpers ── */
+.section-tag{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;color:var(--accent);
+  letter-spacing:3px;text-transform:uppercase;
+  margin-bottom:14px;
+  display:flex;align-items:center;gap:10px;
+}
+.section-tag::before{content:'';width:24px;height:1px;background:var(--accent);}
+
+.btn-primary{
+  padding:13px 30px;
+  background:var(--accent);color:var(--bg);
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;letter-spacing:2px;text-transform:uppercase;
+  text-decoration:none;border:none;cursor:none;
+  font-weight:700;transition:all .2s;
+  clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px));
+}
+.btn-primary:hover{background:var(--accent3);}
+
+.btn-ghost{
+  padding:13px 30px;
+  background:transparent;color:var(--text);
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;letter-spacing:2px;text-transform:uppercase;
+  text-decoration:none;border:1px solid var(--border);cursor:none;
+  transition:all .2s;
+}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent);}
+
+/* ── card system ── */
+.card-grid{display:grid;grid-template-columns:repeat(3,1fr);}
+.card-grid.two{grid-template-columns:repeat(2,1fr);}
+.card-grid.four{grid-template-columns:repeat(4,1fr);}
+
+.card{
+  padding:36px;
+  border-right:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  cursor:none;position:relative;
+  transition:background .25s;
+  text-decoration:none;color:var(--text);
+  display:block;overflow:hidden;
+  background:transparent;
+}
+.card:hover{background:var(--surface);}
+.card:last-child{border-right:none;}
+
+.card-num{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;color:var(--muted);
+  letter-spacing:2px;margin-bottom:20px;
+}
+.card-icon{font-size:28px;margin-bottom:14px;}
+.card-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:24px;font-weight:600;
+  line-height:1.2;margin-bottom:10px;
+  color:var(--text);
+}
+.card-sub{font-size:13px;color:var(--muted);line-height:1.6;font-weight:300;margin-bottom:18px;}
+.card-tags{display:flex;flex-wrap:wrap;gap:6px;}
+.tag{
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px;letter-spacing:1px;
+  padding:3px 8px;
+  border:1px solid var(--border);
+  color:var(--muted);text-transform:uppercase;
+}
+.card-arrow{
+  position:absolute;bottom:28px;right:28px;
+  font-size:18px;color:var(--border);
+  transition:all .25s;
+}
+.card:hover .card-arrow{color:var(--accent);transform:translate(4px,-4px);}
+
+/* index header */
+.index-header{
+  padding:32px 64px;
+  display:flex;align-items:baseline;justify-content:space-between;
+  border-bottom:1px solid var(--border);
+  border-top:1px solid var(--border);
+  background:var(--bg2);
+}
+.index-title{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;color:var(--muted);
+  letter-spacing:3px;text-transform:uppercase;
+}
+.index-count{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;color:var(--muted);
+}
+
+/* ═══════════════════ HOME ═══════════════════ */
+#page-home{padding-top:81px;}
+
+.home-hero{
+  display:grid;grid-template-columns:1fr 1fr;
+  min-height:calc(100vh - 81px);
+  border-bottom:1px solid var(--border);
+}
+
+.hero-left{
+  padding:80px 64px;
+  display:flex;flex-direction:column;justify-content:center;
+  border-right:1px solid var(--border);
+}
+
+.hero-eyebrow{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;color:var(--accent3);
+  letter-spacing:3px;text-transform:uppercase;
+  margin-bottom:32px;
+  display:flex;align-items:center;gap:12px;
+}
+.hero-eyebrow::before{content:'';width:32px;height:1px;background:var(--accent3);}
+
+.hero-name{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(60px,7vw,96px);
+  font-weight:300;line-height:.92;
+  letter-spacing:-2px;margin-bottom:32px;
+}
+.hero-name strong{font-weight:600;display:block;}
+.hero-name em{font-style:italic;color:var(--accent);display:block;}
+
+.hero-bio{
+  font-size:16px;line-height:1.9;color:var(--muted);
+  max-width:440px;margin-bottom:48px;font-weight:300;
+}
+
+.hero-actions{display:flex;gap:14px;flex-wrap:wrap;}
+
+.hero-right{display:grid;grid-template-rows:1fr 1fr;}
+
+.hero-photo{
+  background:var(--surface);
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+  border-bottom:1px solid var(--border);
+}
+.hero-photo::before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(
+    -45deg,transparent,transparent 3px,
+    rgba(0,229,255,.03) 3px,rgba(0,229,255,.03) 4px
+  );
+}
+.photo-letters{
+  font-family:'Cormorant Garamond',serif;
+  font-size:100px;font-weight:300;
+  color:rgba(0,229,255,.08);letter-spacing:-4px;z-index:1;
+}
+.photo-badge{
+  position:absolute;bottom:24px;left:24px;
+  background:var(--accent);color:var(--bg);
+  padding:8px 16px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;letter-spacing:2px;text-transform:uppercase;
+  font-weight:700;
+}
+
+.hero-stats{display:grid;grid-template-columns:1fr 1fr;}
+.stat-block{
+  padding:32px;border-right:1px solid var(--border);
+  display:flex;flex-direction:column;justify-content:center;
+}
+.stat-block:nth-child(even){border-right:none;}
+.stat-block:nth-child(3),.stat-block:nth-child(4){border-top:1px solid var(--border);}
+.stat-n{
+  font-family:'Cormorant Garamond',serif;
+  font-size:48px;font-weight:600;line-height:1;
+  color:var(--accent);margin-bottom:4px;
+}
+.stat-l{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;color:var(--muted);
+  letter-spacing:2px;text-transform:uppercase;
+}
+
+/* ═══════════════════ DETAIL HERO ═══════════════════ */
+.detail-page{padding-top:81px;}
+
+.detail-hero{
+  padding:80px 64px 64px;
+  border-bottom:1px solid var(--border);
+  background:var(--bg2);
+  position:relative;overflow:hidden;
+}
+.detail-hero::before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(
+    -45deg,transparent,transparent 4px,
+    rgba(0,229,255,.02) 4px,rgba(0,229,255,.02) 5px
+  );
+}
+
+.back-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;letter-spacing:2px;
+  color:var(--muted);text-transform:uppercase;cursor:none;
+  text-decoration:none;margin-bottom:48px;
+  transition:color .2s;position:relative;z-index:1;
+}
+.back-btn:hover{color:var(--accent);}
+
+.detail-eyebrow{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;letter-spacing:3px;
+  color:var(--accent);text-transform:uppercase;
+  margin-bottom:20px;position:relative;z-index:1;
+}
+
+.detail-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(48px,6vw,80px);
+  font-weight:300;line-height:.95;
+  letter-spacing:-2px;margin-bottom:32px;
+  position:relative;z-index:1;
+}
+.detail-title em{font-style:italic;color:var(--accent);}
+
+.detail-meta{
+  display:flex;gap:40px;flex-wrap:wrap;
+  position:relative;z-index:1;
+}
+.meta-item{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;letter-spacing:1.5px;
+  color:var(--muted);text-transform:uppercase;
+}
+.meta-item span{color:var(--text);display:block;margin-top:4px;font-size:12px;}
+
+/* ═══════════════════ DETAIL BODY ═══════════════════ */
+.detail-body{max-width:1200px;margin:0 auto;padding:0 64px 80px;}
+
+.detail-section{
+  padding:60px 0;
+  border-bottom:1px solid var(--border);
+}
+.detail-section:last-child{border-bottom:none;}
+
+.ds-label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;letter-spacing:3px;
+  color:var(--accent);text-transform:uppercase;
+  margin-bottom:20px;
+}
+
+.ds-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:36px;font-weight:600;
+  margin-bottom:20px;line-height:1.1;
+}
+
+.ds-text{
+  font-size:16px;line-height:1.9;
+  color:var(--muted);font-weight:300;
+  max-width:680px;margin-bottom:20px;
+}
+
+.highlight-box{
+  background:var(--surface);
+  border-left:3px solid var(--accent);
+  padding:24px 28px;margin:28px 0;
+}
+.highlight-box p{
+  font-family:'Cormorant Garamond',serif;
+  font-size:20px;font-style:italic;
+  line-height:1.6;color:var(--text);
+}
+
+.detail-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:16px;margin-top:28px;
+}
+.detail-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  padding:28px;
+  transition:border-color .3s;
+}
+.detail-card:hover{border-color:var(--accent);}
+
+.dc-label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;letter-spacing:2px;
+  color:var(--muted);text-transform:uppercase;margin-bottom:8px;
+}
+.dc-value{
+  font-family:'Cormorant Garamond',serif;
+  font-size:22px;font-weight:600;
+  color:var(--text);margin-bottom:8px;
+}
+.dc-desc{font-size:13px;color:var(--muted);line-height:1.6;font-weight:300;}
+
+.achievement-list{list-style:none;margin-top:20px;}
+.achievement-list li{
+  padding:16px 0;border-bottom:1px solid var(--border);
+  display:flex;align-items:flex-start;gap:16px;
+  font-size:15px;line-height:1.7;color:var(--muted);font-weight:300;
+}
+.achievement-list li::before{
+  content:'→';color:var(--accent3);
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;flex-shrink:0;margin-top:2px;
+}
+.achievement-list li:last-child{border-bottom:none;}
+
+.tech-stack{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px;}
+.tech-chip{
+  padding:8px 16px;
+  border:1px solid var(--border);
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;letter-spacing:1px;
+  color:var(--muted);text-transform:uppercase;
+  background:var(--surface);
+  transition:border-color .2s,color .2s;
+}
+.tech-chip:hover{border-color:var(--accent);color:var(--accent);}
+
+/* timeline */
+.tl-item{
+  display:grid;grid-template-columns:130px 1fr;
+  gap:32px;padding:32px 0;
+  border-bottom:1px solid var(--border);
+}
+.tl-date{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;color:var(--muted);
+  letter-spacing:1px;padding-top:4px;
+}
+.tl-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:22px;font-weight:600;margin-bottom:4px;
+}
+.tl-sub{font-size:13px;color:var(--accent);margin-bottom:12px;font-weight:500;}
+.tl-desc{font-size:14px;color:var(--muted);line-height:1.7;font-weight:300;}
+
+/* skill bars */
+.skill-cat{
+  background:var(--surface);border:1px solid var(--border);
+  padding:28px;transition:border-color .3s;
+}
+.skill-cat:hover{border-color:var(--accent2);}
+.cat-icon{font-size:28px;margin-bottom:14px;}
+.cat-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:18px;font-weight:600;margin-bottom:20px;
+}
+.skill-bar{margin-bottom:14px;}
+.sb-row{
+  display:flex;justify-content:space-between;
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;color:var(--muted);
+  letter-spacing:1px;margin-bottom:6px;text-transform:uppercase;
+}
+.sb-track{height:2px;background:var(--border);position:relative;}
+.sb-fill{
+  height:100%;position:absolute;left:0;top:0;
+  background:linear-gradient(90deg,var(--accent),var(--accent2));
+  transition:width 1.2s ease;
+}
+
+/* related nav */
+.related-nav{
+  display:grid;grid-template-columns:1fr 1fr;
+  border-top:1px solid var(--border);
+}
+.rn-item{
+  padding:32px 40px;cursor:none;
+  transition:background .2s;text-decoration:none;color:var(--text);
+}
+.rn-item:first-child{border-right:1px solid var(--border);}
+.rn-item:hover{background:var(--surface);}
+.rn-dir{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;letter-spacing:2px;
+  color:var(--muted);text-transform:uppercase;margin-bottom:8px;
+}
+.rn-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:20px;font-weight:600;
+}
+
+/* footer */
+footer{
+  background:var(--bg2);color:var(--text);
+  padding:32px 64px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-top:1px solid var(--border);
+  position:relative;z-index:1;
+}
+.footer-logo{
+  font-family:'Cormorant Garamond',serif;
+  font-size:20px;font-weight:600;
+}
+.footer-logo em{color:var(--accent);font-style:italic;}
+.footer-copy{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;color:var(--muted);letter-spacing:1px;
+}
+
+/* contact */
+.contact-link{
+  display:flex;align-items:center;gap:10px;
+  padding:14px 24px;
+  background:var(--surface);border:1px solid var(--border);
+  color:var(--text);text-decoration:none;
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;letter-spacing:1px;cursor:none;
+  transition:all .3s;
+}
+.contact-link:hover{border-color:var(--accent);color:var(--accent);}
+
+/* responsive */
+@media(max-width:900px){
+  nav{padding:16px 24px;}
+  .nav-links{display:none;}
+  .home-hero{grid-template-columns:1fr;}
+  .hero-right{display:none;}
+  .hero-left{padding:40px 24px;}
+  .index-header{padding:20px 24px;}
+  .card-grid,.card-grid.two,.card-grid.four{grid-template-columns:1fr;}
+  .card{border-right:none;}
+  .detail-hero{padding:40px 24px 40px;}
+  .detail-body{padding:0 24px 40px;}
+  .detail-grid{grid-template-columns:1fr;}
+  .tl-item{grid-template-columns:1fr;gap:8px;}
+  .related-nav{grid-template-columns:1fr;}
+  .rn-item:first-child{border-right:none;border-bottom:1px solid var(--border);}
+  footer{flex-direction:column;gap:10px;padding:20px 24px;text-align:center;}
+}
+</style>
+</head>
+<body>
+
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+<div class="orb orb3"></div>
+<div id="cursor"></div>
+
+<!-- ── NAV ── -->
+<nav>
+  <a class="nav-logo" onclick="go('home')" href="#">S<em>.</em>Babezzine</a>
+  <ul class="nav-links">
+    <li><a onclick="go('projects')"     href="#">Projects</a></li>
+    <li><a onclick="go('internships')"  href="#">Experience</a></li>
+    <li><a onclick="go('skills')"       href="#">Skills</a></li>
+    <li><a onclick="go('about')"        href="#">About</a></li>
+  </ul>
+  <a onclick="go('contact')" href="#" class="nav-cta">Contact</a>
+</nav>
+
+<!-- ══════════════════════════════════════════════
+     HOME
+═══════════════════════════════════════════════ -->
+<div class="page active" id="page-home">
+  <div class="home-hero">
+    <div class="hero-left">
+      <div class="hero-eyebrow">Available for Internships</div>
+      <h1 class="hero-name">
+        <span>Saad</span>
+        <strong>Babezzine</strong>
+        <em>Engineer.</em>
+      </h1>
+      <p class="hero-bio">Electrical Engineering student at Bunker Hill CC, specializing in AC/DC circuit analysis, phasor methods, and signal processing. Turning theory into reality.</p>
+      <div class="hero-actions">
+        <a onclick="go('projects')" href="#" class="btn-primary">View Projects</a>
+        <a onclick="go('about')"    href="#" class="btn-ghost">About Me</a>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="hero-photo">
+        <div class="photo-letters">SB</div>
+        <div class="photo-badge">EE Student — Boston, MA</div>
+      </div>
+      <div class="hero-stats">
+        <div class="stat-block"><div class="stat-n">3.8</div><div class="stat-l">GPA</div></div>
+        <div class="stat-block"><div class="stat-n">12+</div><div class="stat-l">Projects</div></div>
+        <div class="stat-block"><div class="stat-n">2</div><div class="stat-l">Internships</div></div>
+        <div class="stat-block"><div class="stat-n">4</div><div class="stat-l">Certs</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Projects preview -->
+  <div class="index-header">
+    <div class="index-title">Selected Projects</div>
+    <div class="index-count">12 total</div>
+  </div>
+  <div class="card-grid">
+    <a class="card" onclick="detail('project','p1')" href="#">
+      <div class="card-num">01 — Featured</div>
+      <div class="card-icon">⚡</div>
+      <div class="card-title">AC Circuit Analyzer</div>
+      <div class="card-sub">Full phasor simulator with nodal analysis, LTSpice verification, and phasor diagram generator.</div>
+      <div class="card-tags"><span class="tag">Python</span><span class="tag">LTSpice</span><span class="tag">Phasors</span></div>
+      <div class="card-arrow">↗</div>
+    </a>
+    <a class="card" onclick="detail('project','p2')" href="#">
+      <div class="card-num">02</div>
+      <div class="card-icon">🔌</div>
+      <div class="card-title">DC Power Supply</div>
+      <div class="card-sub">Regulated 5V supply — transformer, bridge rectifier, LM7805. Fully PCB-fabricated.</div>
+      <div class="card-tags"><span class="tag">KiCad</span><span class="tag">PCB</span><span class="tag">Power</span></div>
+      <div class="card-arrow">↗</div>
+    </a>
+    <a class="card" onclick="detail('project','p3')" href="#">
+      <div class="card-num">03</div>
+      <div class="card-icon">📡</div>
+      <div class="card-title">RLC Filter Design</div>
+      <div class="card-sub">LP, HP, BP filters designed, simulated, built, and measured against Bode plot theory.</div>
+      <div class="card-tags"><span class="tag">MATLAB</span><span class="tag">Filters</span><span class="tag">Bode</span></div>
+      <div class="card-arrow">↗</div>
+    </a>
+  </div>
+  <div style="padding:24px 64px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+    <a onclick="go('projects')" href="#" class="btn-ghost" style="font-size:11px;">View All Projects →</a>
+  </div>
+
+  <!-- Experience preview -->
+  <div class="index-header">
+    <div class="index-title">Experience</div>
+    <div class="index-count">2 positions</div>
+  </div>
+  <div class="card-grid two">
+    <a class="card" onclick="detail('internship','i1')" href="#">
+      <div class="card-num">Summer 2024 · 3 months</div>
+      <div class="card-icon">⚙️</div>
+      <div class="card-title">EE Intern</div>
+      <div class="card-sub">Power Systems Corp — Boston, MA. AC systems, LTSpice simulation, PCB review.</div>
+      <div class="card-tags"><span class="tag">AC Systems</span><span class="tag">LTSpice</span><span class="tag">Altium</span></div>
+      <div class="card-arrow">↗</div>
+    </a>
+    <a class="card" onclick="detail('internship','i2')" href="#">
+      <div class="card-num">Spring 2024 · 4 months</div>
+      <div class="card-icon">🔬</div>
+      <div class="card-title">Lab Assistant</div>
+      <div class="card-sub">Bunker Hill CC — ENR-171 & ENR-272 lab support and peer teaching.</div>
+      <div class="card-tags"><span class="tag">Teaching</span><span class="tag">Circuit Analysis</span></div>
+      <div class="card-arrow">↗</div>
+    </a>
+  </div>
+  <footer>
+    <div class="footer-logo">S<em>.</em>Babezzine</div>
+    <div class="footer-copy">© 2026 · Electrical Engineer in Training · Boston, MA</div>
+  </footer>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     PROJECTS LIST
+═══════════════════════════════════════════════ -->
+<div class="page" id="page-projects">
+  <div class="detail-page">
+    <div class="detail-hero">
+      <a class="back-btn" onclick="go('home')" href="#">← Home</a>
+      <div class="detail-eyebrow">Portfolio</div>
+      <div class="detail-title">All <em>Projects</em></div>
+      <div class="detail-meta">
+        <div class="meta-item">Category<span>Engineering & Software</span></div>
+        <div class="meta-item">Count<span>12 Projects</span></div>
+      </div>
+    </div>
+    <div class="card-grid" style="border-bottom:1px solid var(--border);">
+      <a class="card" onclick="detail('project','p1')" href="#"><div class="card-num">01 — Featured</div><div class="card-icon">⚡</div><div class="card-title">AC Circuit Analyzer</div><div class="card-sub">Phasor simulator, nodal/mesh engine, Thevenin solver, LTSpice verified.</div><div class="card-tags"><span class="tag">Python</span><span class="tag">NumPy</span><span class="tag">LTSpice</span></div><div class="card-arrow">↗</div></a>
+      <a class="card" onclick="detail('project','p2')" href="#"><div class="card-num">02</div><div class="card-icon">🔌</div><div class="card-title">DC Power Supply</div><div class="card-sub">5V regulated supply, full signal chain design and PCB fabrication.</div><div class="card-tags"><span class="tag">KiCad</span><span class="tag">PCB</span><span class="tag">Power</span></div><div class="card-arrow">↗</div></a>
+      <a class="card" onclick="detail('project','p3')" href="#"><div class="card-num">03</div><div class="card-icon">📡</div><div class="card-title">RLC Filter Design</div><div class="card-sub">Three filter types — designed, simulated, and bench-tested with Bode plots.</div><div class="card-tags"><span class="tag">MATLAB</span><span class="tag">Bode Plot</span></div><div class="card-arrow">↗</div></a>
+    </div>
+    <div class="card-grid" style="border-bottom:1px solid var(--border);">
+      <a class="card" onclick="detail('project','p4')" href="#"><div class="card-num">04</div><div class="card-icon">🤖</div><div class="card-title">Arduino Sensor Array</div><div class="card-sub">Multi-sensor IoT system with LCD display and Python serial data logging.</div><div class="card-tags"><span class="tag">Arduino</span><span class="tag">C++</span><span class="tag">IoT</span></div><div class="card-arrow">↗</div></a>
+      <a class="card" onclick="detail('project','p5')" href="#"><div class="card-num">05</div><div class="card-icon">📊</div><div class="card-title">Thevenin/Norton Calculator</div><div class="card-sub">MATLAB tool to automate equivalent circuit computation for AC networks.</div><div class="card-tags"><span class="tag">MATLAB</span><span class="tag">Cramer's Rule</span></div><div class="card-arrow">↗</div></a>
+      <a class="card" href="#"><div class="card-num">06</div><div class="card-icon">🔧</div><div class="card-title">Op-Amp Amplifier</div><div class="card-sub">Non-inverting amplifier gain=10 with LM741. Gain vs frequency characterization.</div><div class="card-tags"><span class="tag">Op-Amp</span><span class="tag">Analog</span></div><div class="card-arrow">↗</div></a>
+    </div>
+    <footer><div class="footer-logo">S<em>.</em>Babezzine</div><div class="footer-copy">© 2026 · Boston, MA</div></footer>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     PROJECT DETAILS
+═══════════════════════════════════════════════ -->
+<div class="page" id="page-detail-project-p1">
+  <div class="detail-page">
+    <div class="detail-hero">
+      <a class="back-btn" onclick="go('projects')" href="#">← All Projects</a>
+      <div class="detail-eyebrow">Project 01 — Featured</div>
+      <div class="detail-title">AC Circuit <em>Analyzer</em></div>
+      <div class="detail-meta">
+        <div class="meta-item">Year<span>2024</span></div>
+        <div class="meta-item">Type<span>Software Tool</span></div>
+        <div class="meta-item">Stack<span>Python · LTSpice</span></div>
+        <div class="meta-item">Status<span>Completed ✓</span></div>
+      </div>
+    </div>
+    <div class="detail-body">
+      <div class="detail-section">
+        <div class="ds-label">Overview</div>
+        <div class="ds-title">What It Does</div>
+        <div class="ds-text">A comprehensive Python tool that automates AC circuit analysis using phasor methods. Given component values and source frequencies, it computes all node voltages, mesh currents, Thevenin/Norton equivalents, and generates phasor diagrams — then verifies all results against LTSpice AC simulation.</div>
+        <div class="highlight-box"><p>"Built to do exactly what we do by hand in ENR-272 — but 100× faster, with visual output and automatic LTSpice verification."</p></div>
+      </div>
+      <div class="detail-section">
+        <div class="ds-label">Key Features</div>
+        <div class="detail-grid">
+          <div class="detail-card"><div class="dc-label">Feature 01</div><div class="dc-value">Nodal Analysis Engine</div><div class="dc-desc">Sets up and solves KCL equations for any n-node circuit using complex matrix inversion and Cramer's rule.</div></div>
+          <div class="detail-card"><div class="dc-label">Feature 02</div><div class="dc-value">Phasor Diagram Generator</div><div class="dc-desc">Draws interactive phasor diagrams showing magnitude, phase angle, and lead/lag relationships.</div></div>
+          <div class="detail-card"><div class="dc-label">Feature 03</div><div class="dc-value">Thevenin / Norton Solver</div><div class="dc-desc">Finds Vth, Zth, IN, ZN at any terminal pair using open/short circuit phasor analysis.</div></div>
+          <div class="detail-card"><div class="dc-label">Feature 04</div><div class="dc-value">LTSpice Verification</div><div class="dc-desc">Exports SPICE netlist, runs AC simulation, and auto-compares Python vs LTSpice results.</div></div>
+        </div>
+      </div>
+      <div class="detail-section">
+        <div class="ds-label">Tech Stack</div>
+        <div class="tech-stack">
+          <span class="tech-chip">Python 3.11</span><span class="tech-chip">NumPy</span>
+          <span class="tech-chip">Matplotlib</span><span class="tech-chip">LTSpice XVII</span>
+          <span class="tech-chip">Cramer's Rule</span><span class="tech-chip">Phasor Math</span>
+        </div>
+      </div>
+      <div class="detail-section">
+        <div class="ds-label">Results</div>
+        <ul class="achievement-list">
+          <li>Solved 15+ circuit configurations with 100% accuracy vs LTSpice verification</li>
+          <li>Reduced manual nodal analysis time from ~30 min to under 2 seconds per circuit</li>
+          <li>Phasor diagrams helped 20+ classmates visualize AC relationships in ENR-272</li>
+          <li>Received highest instructor evaluation at end-of-semester engineering showcase</li>
+        </ul>
+      </div>
+    </div>
+    <div class="related-nav">
+      <a class="rn-item" onclick="go('projects')" href="#"><div class="rn-dir">← All Projects</div><div class="rn-title">Back to Portfolio</div></a>
+      <a class="rn-item" onclick="detail('project','p2')" href="#"><div class="rn-dir">Next Project →</div><div class="rn-title">DC Power Supply</div></a>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="page-detail-project-p2">
+  <div class="detail-page">
+    <div class="detail-hero">
+      <a class="back-btn" onclick="go('projects')" href="#">← All Projects</a>
+      <div class="detail-eyebrow">Project 02</div>
+      <div class="detail-title">DC Power <em>Supply</em></div>
+      <div class="detail-meta">
+        <div class="meta-item">Year<span>2024</span></div><div class="meta-item">Type<span>Hardware Design</span></div>
+        <div class="meta-item">Output<span>5V Regulated</span></div>
+      </div>
+    </div>
+    <div class="detail-body">
+      <div class="detail-section">
+        <div class="ds-label">Overview</div><div class="ds-title">From AC to Regulated DC</div>
+        <div class="ds-text">Designed and built a complete regulated 5V DC supply. Full chain: step-down transformer → bridge rectifier → filter cap → LM7805 regulator → output. Every stage hand-calculated, then LTSpice-simulated, then physically bench-tested.</div>
+        <div class="highlight-box"><p>"Every stage was hand-calculated first, simulated in LTSpice, then built and measured on the bench — zero shortcuts."</p></div>
+      </div>
+      <div class="detail-section">
+        <div class="ds-label">Design Stages</div>
+        <div class="detail-grid">
+          <div class="detail-card"><div class="dc-label">Stage 01</div><div class="dc-value">Transformer</div><div class="dc-desc">120V AC → 9V AC step-down. Turns ratio selected for peak voltage headroom above regulation dropout.</div></div>
+          <div class="detail-card"><div class="dc-label">Stage 02</div><div class="dc-value">Bridge Rectifier</div><div class="dc-desc">4× 1N4007 diodes. Full-wave rectification with theoretical and measured ripple comparison.</div></div>
+          <div class="detail-card"><div class="dc-label">Stage 03</div><div class="dc-value">Filter Capacitor</div><div class="dc-desc">2200μF electrolytic. Ripple voltage reduced to &lt;50mV at full 500mA load.</div></div>
+          <div class="detail-card"><div class="dc-label">Stage 04</div><div class="dc-value">LM7805 Regulator</div><div class="dc-desc">±5% regulation over 0–1A range. Heat sink sized for worst-case power dissipation.</div></div>
+        </div>
+      </div>
+      <div class="detail-section">
+        <div class="ds-label">Tech Stack</div>
+        <div class="tech-stack">
+          <span class="tech-chip">KiCad 7</span><span class="tech-chip">LTSpice</span>
+          <span class="tech-chip">PCB Fabrication</span><span class="tech-chip">Oscilloscope</span>
+          <span class="tech-chip">LM7805</span><span class="tech-chip">1N4007</span>
+        </div>
+      </div>
+    </div>
+    <div class="related-nav">
+      <a class="rn-item" onclick="detail('project','p1')" href="#"><div class="rn-dir">← Previous</div><div class="rn-title">AC Circuit Analyzer</div></a>
+      <a class="rn-item" onclick="detail('project','p3')" href="#"><div class="rn-dir">Next →</div><div class="rn-title">RLC Filter Design</div></a>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="page-detail-project-p3">
+  <div class="detail-page">
+    <div class="detail-hero">
+      <a class="back-btn" onclick="go('projects')" href="#">← All Projects</a>
+      <div class="detail-eyebrow">Project 03</div>
+      <div class="detail-title">RLC Filter <em>Design</em></div>
+      <div class="detail-meta">
+        <div class="meta-item">Year<span>2024</span></div><div class="meta-item">Type<span>Circuit Analysis</span></div>
+      </div>
+    </div>
+    <div class="detail-body">
+      <div class="detail-section">
+        <div class="ds-label">Overview</div><div class="ds-title">Filtering the Signal</div>
+        <div class="ds-text">Designed LP, HP, and BP RLC filters. For each type: hand-calculated cutoff frequency → simulated in LTSpice → built on breadboard → measured actual frequency response using function generator and oscilloscope.</div>
+      </div>
+      <div class="detail-section">
+        <div class="ds-label">Results</div>
+        <ul class="achievement-list">
+          <li>Low-Pass Filter at fc=1kHz — measured -3dB point within 2% of theory</li>
+          <li>High-Pass Filter at fc=5kHz — phase response matched Bode plot predictions exactly</li>
+          <li>Band-Pass at f₀=10kHz — measured Q-factor compared to ω₀/BW calculation</li>
+          <li>All filters validated across 100Hz–100kHz frequency sweep</li>
+        </ul>
+      </div>
+    </div>
+    <div class="related-nav">
+      <a class="rn-item" onclick="detail('project','p2')" href="#"><div class="rn-dir">← Previous</div><div class="rn-title">DC Power Supply</div></a>
+      <a class="rn-item" onclick="detail('project','p4')" href="#"><div class="rn-dir">Next →</div><div class="rn-title">Arduino Sensor Array</div></a>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="page-detail-project-p4">
+  <div class="detail-page">
+    <div class="detail-hero">
+      <a class="back-btn" onclick="go('projects')" href="#">← All Projects</a>
+      <div class="detail-eyebrow">Project 04</div>
+      <div class="detail-title">Arduino Sensor <em>Array</em></div>
+      <div class="detail-meta"><div class="meta-item">Year<span>2023</span></div><div class="meta-item">Type<span>Embedded Systems</span></div></div>
+    </div>
+    <div class="detail-body">
+      <div class="detail-section">
+        <div class="ds-label">Overview</div><div class="ds-title">IoT Monitoring System</div>
+        <div class="ds-text">Multi-sensor data acquisition with Arduino Uno. Reads DHT22 (temp/humidity), LDR (light), and HC-SR04 (distance) simultaneously, displays on 16×2 I2C LCD, and logs to Python over serial for plotting.</div>
+      </div>
+      <div class="detail-section">
+        <div class="ds-label">Tech Stack</div>
+        <div class="tech-stack">
+          <span class="tech-chip">Arduino Uno</span><span class="tech-chip">C++</span>
+          <span class="tech-chip">DHT22</span><span class="tech-chip">HC-SR04</span>
+          <span class="tech-chip">I2C LCD</span><span class="tech-chip">Python Serial</span>
+        </div>
+      </div>
+    </div>
+    <div class="related-nav">
+      <a class="rn-item" onclick="detail('project','p3')" href="#"><div class="rn-dir">← Previous</div><div class="rn-title">RLC Filter Design</div></a>
+      <a class="rn-item" onclick="detail('project','p5')" href="#"><div class="rn-dir">Next →</div><div class="rn-title">Thevenin/Norton Calculator</div></a>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="page-detail-project-p5">
+  <div class="detail-page">
+    <div class="detail-hero">
+      <a class="back-btn" onclick="go('projects')" href="#">← All Projects</a>
+      <div class="detail-eyebrow">Project 05</div>
+      <div class="detail-title">Thevenin/Norton <em>Calculator</em></div>
+      <div class="detail-meta"><div class="meta-item">Year<span>2024</span></div><div class="meta-item">Course<span>ENR-272</span></div></div>
+    </div>
+    <div class="detail-body">
+      <div class="detail-section">
+        <div class="ds-label">Overview</div><div class="ds-title">Equivalent Circuit Automation</div>
+        <div class="ds-text">MATLAB script that takes any linear AC circuit description and automatically computes Vth, Zth, IN, and ZN using Cramer's rule with full complex phasor arithmetic. Results displayed in both rectangular and polar form.</div>
+      </div>
+      <div class="detail-section">
+        <div class="ds-label">Tech Stack</div>
+        <div class="tech-stack">
+          <span class="tech-chip">MATLAB</span><span class="tech-chip">Complex Numbers</span>
+          <span class="tech-chip">Cramer's Rule</span><span class="tech-chip">Phasor Math</span>
+        </div>
+      </div>
+    </div>
+    <div class="related-nav">
+      <a class="rn-item" onclick="detail('project','p4')" href="#"><div class="rn-dir">← Previous</div><div class="rn-title">Arduino Sensor Array</div></a>
+      <a class="rn-item" onclick="go('projects')" href="#"><div class="rn-dir">All Projects →</div><div class="rn-title">Back to Portfolio</div></a>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     INTERNSHIPS LIST
+═══════════════════════════════════════════════ -->
+<div class="page" id="page-internships">
+  <div class="detail-page">
+    <div class="detail-hero">
+      <a class="back-btn" onclick="go('home')" href="#">← Home</a>
+      <div class="detail-eyebrow">Work Experience</div>
+      <div class="detail-title">Internships &amp; <em>Roles</em></div>
+      <div class="detail-meta">
+        <div class="meta-item">Positions<span>2</span></div>
+        <div class="meta-item">Location<span>Boston, MA</span></div>
+        <div class="meta-item">Status<span>Open to Offers</span></div>
+      </div>
+    </div>
+    <div class="card-grid two" style="border-bottom:1px solid var(--border);">
+      <a class="card" onclick="detail('internship','i1')" href="#">
+        <div class="card-num">Summer 2024 · 3 months</div><div class="card-icon">⚙️</div>
+        <div class="card-title">EE Intern</div>
+        <div class="card-sub">Power Systems Corp — Boston, MA. AC circuit simulation, PCB review, technical docs.</div>
+        <div class="card-tags"><span class="tag">AC Systems</span><span class="tag">LTSpice</span><span class="tag">Altium</span></div>
+        <div class="card-arrow">↗</div>
+      </a>
+      <a class="card" onclick="detail('internship','i2')" href="#">
+        <div class="card-num">Spring 2024 · 4 months</div><div class="card-icon">🔬</div>
+        <div class="card-title">Lab Assistant</div>
+        <div class="card-sub">Bunker Hill CC — ENR-171 & ENR-272 lab support and peer teaching.</div>
+        <div class="card-tags"><span class="tag">Teaching</span><span class="tag">Circuit Analysis</span></div>
+        <div class="card-arrow">↗</div>
+      </a>
+    </div>
+    <footer><div class="footer-logo">S<em>.</em>Babezzine</div><div class="footer-copy">© 2026 · Boston, MA</div></footer>
+  </div>
+</div>
+
+<!-- Internship Details -->
+<div class="page" id="page-detail-internship-i1">
+  <div class="detail-page">
+    <div class="detail-hero">
+      <a class="back-btn" onclick="go('internships')" href="#">← All Experience</a>
+      <div class="detail-eyebrow">Summer 2024 · 3 months</div>
+      <div class="detail-title">EE <em>Intern</em></div>
+      <div class="detail-meta">
+        <div class="meta-item">Company<span>Power Systems Corp</span></div>
+        <div class="meta-item">Location<span>Boston, MA</span></div>
+        <div class="meta-item">Duration<span>June – Aug 2024</span></div>
+      </div>
+    </div>
+    <div class="detail-body">
+      <div class="detail-section">
+        <div class="ds-label">Role Overview</div><div class="ds-title">What I Did</div>
+        <div class="ds-text">Worked alongside senior engineers designing and testing AC power distribution systems. Primary responsibilities: LTSpice simulation, component selection, technical documentation, and PCB layout review.</div>
+        <div class="highlight-box"><p>"My ENR-272 phasor analysis coursework applied directly from day one — I was running real simulations within the first week."</p></div>
+      </div>
+      <div class="detail-section">
+        <div class="ds-label">Key Contributions</div>
+        <ul class="achievement-list">
+          <li>Simulated 12 AC circuit configurations in LTSpice, cutting prototype testing time by 30%</li>
+          <li>Documented technical specs for 5 power supply units — voltage regulation, load response, thermal</li>
+          <li>PCB layout review in Altium Designer — caught 3 trace clearance violations before fab</li>
+          <li>Presented weekly simulation results to a team of 8 engineers</li>
+          <li>Built a Python script to auto-convert LTSpice output into formatted Excel reports</li>
+        </ul>
+      </div>
+      <div class="detail-section">
+        <div class="ds-label">Skills Used</div>
+        <div class="tech-stack">
+          <span class="tech-chip">LTSpice</span><span class="tech-chip">Altium Designer</span>
+          <span class="tech-chip">AC Circuit Analysis</span><span class="tech-chip">Python</span>
+          <span class="tech-chip">Technical Writing</span><span class="tech-chip">Phasor Methods</span>
+        </div>
+      </div>
+    </div>
+    <div class="related-nav">
+      <a class="rn-item" onclick="go('internships')" href="#"><div class="rn-dir">← All Experience</div><div class="rn-title">Back to Experience</div></a>
+      <a class="rn-item" onclick="detail('internship','i2')" href="#"><div class="rn-dir">Next Role →</div><div class="rn-title">Lab Assistant</div></a>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="page-detail-internship-i2">
+  <div class="detail-page">
+    <div class="detail-hero">
+      <a class="back-btn" onclick="go('internships')" href="#">← All Experience</a>
+      <div class="detail-eyebrow">Spring 2024 · 4 months</div>
+      <div class="detail-title">Lab <em>Assistant</em></div>
+      <div class="detail-meta">
+        <div class="meta-item">Institution<span>Bunker Hill CC</span></div>
+        <div class="meta-item">Courses<span>ENR-171 & ENR-272</span></div>
+        <div class="meta-item">Duration<span>Jan – May 2024</span></div>
+      </div>
+    </div>
+    <div class="detail-body">
+      <div class="detail-section">
+        <div class="ds-label">Role Overview</div><div class="ds-title">Teaching & Supporting</div>
+        <div class="ds-text">Supported weekly lab sessions for 40+ students in ENR-171 and ENR-272. Helped students build and troubleshoot circuits, explained phasor concepts, maintained lab equipment, and created supplementary learning materials.</div>
+      </div>
+      <div class="detail-section">
+        <div class="ds-label">Key Contributions</div>
+        <ul class="achievement-list">
+          <li>Guided 40+ students through hands-on circuit builds and AC analysis weekly</li>
+          <li>Created visual reference sheets for phasor diagrams, ELI/ICE rules, and Thevenin methods</li>
+          <li>Calibrated 12 oscilloscopes, 8 function generators, and 20 DMMs each semester</li>
+          <li>Developed a LTSpice AC analysis quick-reference guide — adopted as course material</li>
+        </ul>
+      </div>
+    </div>
+    <div class="related-nav">
+      <a class="rn-item" onclick="detail('internship','i1')" href="#"><div class="rn-dir">← Previous</div><div class="rn-title">EE Intern</div></a>
+      <a class="rn-item" onclick="go('internships')" href="#"><div class="rn-dir">All Experience →</div><div class="rn-title">Back to Experience</div></a>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SKILLS
+═══════════════════════════════════════════════ -->
+<div class="page" id="page-skills">
+  <div class="detail-page">
+    <div class="detail-hero">
+      <a class="back-btn" onclick="go('home')" href="#">← Home</a>
+      <div class="detail-eyebrow">Capabilities</div>
+      <div class="detail-title">Skills &amp; <em>Tools</em></div>
+    </div>
+    <div class="detail-body">
+      <div class="detail-section">
+        <div class="ds-label">Technical Skills</div>
+        <div class="detail-grid">
+          <div class="detail-card"><div class="dc-label">Circuit Analysis</div><div class="dc-value">Expert</div><div class="dc-desc">Nodal/mesh, phasors, Thevenin/Norton, superposition, voltage/current dividers in AC & DC domains.</div></div>
+          <div class="detail-card"><div class="dc-label">Simulation</div><div class="dc-value">Advanced</div><div class="dc-desc">LTSpice AC/DC/transient, MATLAB Simulink, Python complex circuit solvers with auto-verification.</div></div>
+          <div class="detail-card"><div class="dc-label">PCB Design</div><div class="dc-value">Intermediate</div><div class="dc-desc">KiCad schematic capture, PCB layout, DRC, Gerber export, and hand-soldering.</div></div>
+          <div class="detail-card"><div class="dc-label">Programming</div><div class="dc-value">Intermediate</div><div class="dc-desc">Python (NumPy, Matplotlib, Pandas), MATLAB, C++ for Arduino/embedded systems.</div></div>
+          <div class="detail-card"><div class="dc-label">Lab Instruments</div><div class="dc-value">Proficient</div><div class="dc-desc">Oscilloscopes, function generators, bench DMMs, power supplies, spectrum analyzers.</div></div>
+          <div class="detail-card"><div class="dc-label">Documentation</div><div class="dc-value">Proficient</div><div class="dc-desc">Technical reports, engineering memos, LaTeX, professional engineering presentations.</div></div>
+        </div>
+      </div>
+      <div class="detail-section">
+        <div class="ds-label">Skill Proficiency</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:8px;">
+          <div class="skill-cat">
+            <div class="cat-icon">⚡</div>
+            <div class="cat-title">Circuit Analysis</div>
+            <div class="skill-bar"><div class="sb-row"><span>Nodal / Mesh</span><span>95%</span></div><div class="sb-track"><div class="sb-fill" style="width:95%"></div></div></div>
+            <div class="skill-bar"><div class="sb-row"><span>Phasor Analysis</span><span>90%</span></div><div class="sb-track"><div class="sb-fill" style="width:90%"></div></div></div>
+            <div class="skill-bar"><div class="sb-row"><span>Thevenin/Norton</span><span>88%</span></div><div class="sb-track"><div class="sb-fill" style="width:88%"></div></div></div>
+            <div class="skill-bar"><div class="sb-row"><span>Superposition</span><span>85%</span></div><div class="sb-track"><div class="sb-fill" style="width:85%"></div></div></div>
+          </div>
+          <div class="skill-cat">
+            <div class="cat-icon">💻</div>
+            <div class="cat-title">Software & Tools</div>
+            <div class="skill-bar"><div class="sb-row"><span>LTSpice</span><span>92%</span></div><div class="sb-track"><div class="sb-fill" style="width:92%"></div></div></div>
+            <div class="skill-bar"><div class="sb-row"><span>MATLAB</span><span>80%</span></div><div class="sb-track"><div class="sb-fill" style="width:80%"></div></div></div>
+            <div class="skill-bar"><div class="sb-row"><span>Python</span><span>75%</span></div><div class="sb-track"><div class="sb-fill" style="width:75%"></div></div></div>
+            <div class="skill-bar"><div class="sb-row"><span>KiCad / PCB</span><span>65%</span></div><div class="sb-track"><div class="sb-fill" style="width:65%"></div></div></div>
+          </div>
+          <div class="skill-cat">
+            <div class="cat-icon">🔧</div>
+            <div class="cat-title">Hardware</div>
+            <div class="skill-bar"><div class="sb-row"><span>Oscilloscope</span><span>90%</span></div><div class="sb-track"><div class="sb-fill" style="width:90%"></div></div></div>
+            <div class="skill-bar"><div class="sb-row"><span>Multimeter</span><span>95%</span></div><div class="sb-track"><div class="sb-fill" style="width:95%"></div></div></div>
+            <div class="skill-bar"><div class="sb-row"><span>Soldering</span><span>78%</span></div><div class="sb-track"><div class="sb-fill" style="width:78%"></div></div></div>
+            <div class="skill-bar"><div class="sb-row"><span>Arduino</span><span>72%</span></div><div class="sb-track"><div class="sb-fill" style="width:72%"></div></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="detail-section">
+        <div class="ds-label">Certifications</div>
+        <div class="card-grid four" style="border:1px solid var(--border);">
+          <div class="card" style="cursor:default;border-right:1px solid var(--border);"><div class="card-icon">🏆</div><div class="card-title" style="font-size:16px;">Circuit Analysis I & II</div><div class="card-sub">Bunker Hill CC · 2024</div></div>
+          <div class="card" style="cursor:default;border-right:1px solid var(--border);"><div class="card-icon">📐</div><div class="card-title" style="font-size:16px;">MATLAB Fundamentals</div><div class="card-sub">MathWorks · 2024</div></div>
+          <div class="card" style="cursor:default;border-right:1px solid var(--border);"><div class="card-icon">⚙️</div><div class="card-title" style="font-size:16px;">Arduino Essentials</div><div class="card-sub">Arduino Education · 2023</div></div>
+          <div class="card" style="cursor:default;"><div class="card-icon">🔌</div><div class="card-title" style="font-size:16px;">PCB Design Basics</div><div class="card-sub">KiCad Academy · 2023</div></div>
+        </div>
+      </div>
+    </div>
+    <footer><div class="footer-logo">S<em>.</em>Babezzine</div><div class="footer-copy">© 2026 · Boston, MA</div></footer>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     ABOUT
+═══════════════════════════════════════════════ -->
+<div class="page" id="page-about">
+  <div class="detail-page">
+    <div class="detail-hero">
+      <a class="back-btn" onclick="go('home')" href="#">← Home</a>
+      <div class="detail-eyebrow">The Person</div>
+      <div class="detail-title">About <em>Me</em></div>
+      <div class="detail-meta">
+        <div class="meta-item">Location<span>Boston, MA</span></div>
+        <div class="meta-item">School<span>Bunker Hill CC</span></div>
+        <div class="meta-item">Major<span>Electrical Engineering</span></div>
+        <div class="meta-item">GPA<span>3.8</span></div>
+      </div>
+    </div>
+    <div class="detail-body">
+      <div class="detail-section">
+        <div class="ds-label">My Story</div><div class="ds-title">From Curiosity to Engineering</div>
+        <div class="ds-text">I've always been fascinated by how electricity works — from the moment I first wired a simple LED circuit, I knew I wanted to understand the math behind the magic. That curiosity led me to Bunker Hill Community College's Electrical Engineering Technology program.</div>
+        <div class="ds-text">My coursework in Circuit Design & Analysis II (ENR-272) has been transformative. Learning phasor analysis, AC circuit theory, Thevenin/Norton equivalents, and superposition gave me tools to tackle real engineering problems — not just textbook exercises.</div>
+        <div class="highlight-box"><p>"Every great circuit begins with a clean schematic and a well-written nodal equation."</p></div>
+        <div class="ds-text">Outside of academics, I work as a lab assistant helping other students grasp the same concepts. Teaching reinforces understanding — there's no better way to truly know something than to explain it clearly.</div>
+      </div>
+      <div class="detail-section">
+        <div class="ds-label">Education Timeline</div>
+        <div class="tl-item">
+          <div class="tl-date">2023 — Now</div>
+          <div><div class="tl-title">Bunker Hill Community College</div><div class="tl-sub">AS in Electrical Engineering Technology · GPA 3.8</div><div class="tl-desc">Dean's List. Key courses: ENR-272 Circuit Design & Analysis II, Calculus III, Physics II, Digital Electronics, MATLAB Programming.</div></div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-date">2022 — 2023</div>
+          <div><div class="tl-title">Secondary School</div><div class="tl-sub">Sciences Track — Mathematics & Physics</div><div class="tl-desc">Strong foundation in mathematics, physics, and introductory electronics. Graduated with honors.</div></div>
+        </div>
+      </div>
+      <div class="detail-section">
+        <div class="ds-label">What I'm Looking For</div>
+        <div class="ds-text">Actively seeking internship opportunities in electrical engineering, power systems, or embedded systems. Strong analytical skills, hands-on lab experience, and genuine passion for complex circuit problems.</div>
+        <div style="margin-top:24px;"><a onclick="go('contact')" href="#" class="btn-primary">Get In Touch</a></div>
+      </div>
+    </div>
+    <footer><div class="footer-logo">S<em>.</em>Babezzine</div><div class="footer-copy">© 2026 · Boston, MA</div></footer>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     CONTACT
+═══════════════════════════════════════════════ -->
+<div class="page" id="page-contact">
+  <div class="detail-page">
+    <div class="detail-hero">
+      <a class="back-btn" onclick="go('home')" href="#">← Home</a>
+      <div class="detail-eyebrow">Get In Touch</div>
+      <div class="detail-title">Let's <em>Connect</em></div>
+      <div class="detail-meta">
+        <div class="meta-item">Status<span>Open to Opportunities</span></div>
+        <div class="meta-item">Response<span>Within 24 hours</span></div>
+      </div>
+    </div>
+    <div class="detail-body">
+      <div class="detail-section">
+        <div class="ds-label">Email</div>
+        <div class="ds-title">Reach Out</div>
+        <div class="ds-text">Whether you have an internship opportunity, a project to collaborate on, or just want to talk circuits — I'm always happy to connect.</div>
+        <div style="margin-top:28px;margin-bottom:8px;">
+          <a href="mailto:saad.babezzine@email.com" style="font-family:'Cormorant Garamond',serif;font-size:36px;color:var(--accent);text-decoration:none;cursor:none;">saad.babezzine@email.com</a>
+        </div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:1px;">→ Best way to reach me</div>
+      </div>
+      <div class="detail-section">
+        <div class="ds-label">Links</div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:8px;">
+          <a href="#" class="contact-link"><span>💼</span> LinkedIn</a>
+          <a href="#" class="contact-link"><span>🐙</span> GitHub</a>
+          <a href="#" class="contact-link"><span>📄</span> Resume PDF</a>
+          <a href="#" class="contact-link"><span>🎓</span> Transcript</a>
+        </div>
+      </div>
+    </div>
+    <footer><div class="footer-logo">S<em>.</em>Babezzine</div><div class="footer-copy">© 2026 · Boston, MA</div></footer>
+  </div>
+</div>
+
+<script>
+// Cursor
+const cur = document.getElementById('cursor');
+document.addEventListener('mousemove', e => { cur.style.left=e.clientX+'px'; cur.style.top=e.clientY+'px'; });
+document.addEventListener('mouseover', e => {
+  const el = e.target.closest('a,button,.card');
+  el ? cur.classList.add('hover') : cur.classList.remove('hover');
+});
+
+// Router
+function go(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const t = document.getElementById('page-'+id);
+  if(t){ t.classList.add('active'); window.scrollTo(0,0); }
+}
+
+function detail(type, id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const t = document.getElementById('page-detail-'+type+'-'+id);
+  if(t){ t.classList.add('active'); window.scrollTo(0,0); }
+}
+
+// Prevent href navigation
+document.querySelectorAll('a').forEach(a => {
+  if(a.getAttribute('href')==='#') a.addEventListener('click', e => e.preventDefault());
+});
+
+// Animate skill bars on scroll
+const bars = document.querySelectorAll('.sb-fill');
+bars.forEach(b => { const w=b.style.width; b.style.width='0'; setTimeout(()=>b.style.width=w, 600); });
+</script>
+</body>
+</html>
