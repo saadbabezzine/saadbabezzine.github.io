@@ -1,0 +1,612 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Solar Power for the Home | Saad Babezzine</title>
+<meta name="description" content="Team research project led by Saad Babezzine at Bunker Hill Community College on how a home solar power system works, with an interactive model of the battery and charge controller.">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600&family=Spectral:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #FFFFFF;
+    --ink: #000000;
+    --muted: #555555;
+    --rule: #D9D9D9;
+    --steel: #8C8C8C;
+    --live: #B3261E;
+    --sun: #C77700;
+    --tint: #F6F6F4;
+    --measure: 40rem;
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font: 400 1.0625rem/1.65 "Public Sans", system-ui, sans-serif; }
+  .wrap { max-width: 46rem; margin: 0 auto; padding: 0 1.25rem; }
+  .wide { max-width: 60rem; margin: 0 auto; padding: 0 1.25rem; }
+
+  a { color: var(--ink); text-decoration-color: var(--ink); text-underline-offset: 0.2em; text-decoration-thickness: 1.5px; }
+  a:hover { color: var(--muted); }
+  a:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; border-radius: 2px; }
+
+  /* draft markers: remove the banner and the .fill class once real details are in */
+  .draft { background: #FFF4D6; border-bottom: 1px solid #E8D3A0; font-size: 0.9rem; padding: 0.6rem 0; }
+  .fill { background: #FFF4D6; box-shadow: 0 0 0 2px #FFF4D6; border-radius: 2px; }
+
+  /* top bar */
+  .bar { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; padding: 1.5rem 0 0; flex-wrap: wrap; }
+  .bar .mark { font-family: Spectral, Georgia, serif; font-weight: 600; font-size: 1.1rem; text-decoration: none; }
+  .bar .back { text-decoration: none; color: var(--muted); font-size: 0.95rem; }
+  .bar .back:hover { color: var(--ink); }
+
+  /* hero */
+  .hero { padding: 4rem 0 0; }
+  .kicker { font-size: 0.9rem; font-weight: 500; color: var(--sun); letter-spacing: 0.06em; text-transform: uppercase; margin: 0 0 0.9rem; }
+  h1 { font-family: Spectral, Georgia, serif; font-weight: 600; font-size: clamp(2.5rem, 8vw, 4rem); line-height: 1.02; letter-spacing: -0.015em; margin: 0 0 1.25rem; }
+  .lede { font-size: 1.2rem; line-height: 1.55; max-width: var(--measure); margin: 0; }
+
+  /* key facts */
+  .facts { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--ink); border-bottom: 1px solid var(--rule); margin: 2.5rem 0 0; }
+  .facts div { padding: 1rem 1rem 1.1rem 0; }
+  .facts div + div { padding-left: 1rem; border-left: 1px solid var(--rule); }
+  .facts dt { font-size: 0.85rem; color: var(--muted); margin: 0 0 0.2rem; }
+  .facts dd { margin: 0; font-family: Spectral, Georgia, serif; font-weight: 600; font-size: 1.35rem; line-height: 1.2; }
+  @media (max-width: 620px) {
+    .facts { grid-template-columns: 1fr 1fr; }
+    .facts div:nth-child(3) { padding-left: 0; border-left: 0; }
+    .facts div:nth-child(n+3) { border-top: 1px solid var(--rule); }
+  }
+
+  /* energy flow diagram */
+  .flow { margin: 3.5rem 0 0; padding: 2rem 0 1.5rem; background: var(--tint); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+  .flow h2 { border: 0; padding: 0; margin-bottom: 0.4rem; }
+  .flow .sub { color: var(--muted); margin: 0 0 1.5rem; font-size: 0.97rem; }
+  .flow svg { display: block; }
+
+  /* simulation */
+  .sim { background: var(--paper); border: 1px solid var(--rule); border-radius: 10px; overflow: hidden; }
+  .sim svg { width: 100%; height: auto; display: block; }
+  .sim .lbl text { font: 600 15px "Public Sans", sans-serif; fill: #111; paint-order: stroke; stroke: rgba(255,255,255,0.85); stroke-width: 4px; stroke-linejoin: round; }
+  .sim .lbl .sm { font-size: 13px; }
+  .sim .tag text { font: 700 11px "Public Sans", sans-serif; }
+  .sim .lcd { font: 600 10px ui-monospace, Menlo, monospace; fill: #5CFF8A; }
+  .sim .batt { font: 700 13px "Public Sans", sans-serif; fill: #111; paint-order: stroke; stroke: #FFF; stroke-width: 3px; }
+  .sim .clock { font: 600 20px "Public Sans", sans-serif; font-variant-numeric: tabular-nums; }
+  .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 0.9rem 1.25rem; padding: 1rem 1.1rem; border-top: 1px solid var(--rule); }
+  .btn { font: 600 0.95rem "Public Sans", sans-serif; background: var(--ink); color: var(--paper); border: 0; border-radius: 999px; padding: 0.55rem 1.1rem; cursor: pointer; min-width: 7.5rem; }
+  .btn:hover { background: #333; }
+  .time { flex: 1 1 14rem; display: grid; gap: 0.2rem; font-size: 0.85rem; color: var(--muted); }
+  .time input { width: 100%; accent-color: var(--sun); }
+  .loads { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .chip { font: 500 0.9rem "Public Sans", sans-serif; background: var(--paper); color: var(--ink); border: 1px solid var(--steel); border-radius: 999px; padding: 0.45rem 0.9rem; cursor: pointer; }
+  .chip[aria-pressed="true"] { background: #FFF1C2; border-color: #E0A100; }
+  .btn:focus-visible, .chip:focus-visible, .time input:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+  .readout { display: grid; grid-template-columns: repeat(4, 1fr); margin: 0; border-top: 1px solid var(--rule); }
+  .readout div { padding: 0.8rem 1.1rem; }
+  .readout div + div { border-left: 1px solid var(--rule); }
+  .readout dt { font-size: 0.8rem; color: var(--muted); }
+  .readout dd { margin: 0; font-family: Spectral, Georgia, serif; font-weight: 600; font-size: 1.25rem; font-variant-numeric: tabular-nums; }
+  .c-dc { color: #D9480F; } .c-ac { color: #2F6FDE; } .c-batt { color: #2E7D4F; }
+  .status { margin: 0; max-width: none; padding: 0.8rem 1.1rem; border-top: 1px solid var(--rule); background: var(--tint); font-size: 0.95rem; }
+  .simnote { color: var(--muted); font-size: 0.85rem; margin: 0.75rem 0 0; }
+  @media (max-width: 600px) {
+    .readout { grid-template-columns: 1fr 1fr; }
+    .readout div:nth-child(3) { border-left: 0; }
+    .readout div:nth-child(n+3) { border-top: 1px solid var(--rule); }
+  }
+
+  /* sections */
+  section { padding: 3.5rem 0 0; }
+  h2 { font-family: Spectral, Georgia, serif; font-weight: 600; font-size: 1.6rem; line-height: 1.2; margin: 0 0 1.5rem; padding-bottom: 0.6rem; border-bottom: 1px solid var(--rule); }
+  h3 { font-size: 1.07rem; font-weight: 600; margin: 0 0 0.3rem; }
+  p { max-width: var(--measure); margin: 0 0 1rem; }
+
+  /* components grid */
+  .parts { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border-top: 1px solid var(--rule); }
+  .part { padding: 1.1rem 1.25rem 1.2rem 0; border-bottom: 1px solid var(--rule); }
+  .part:nth-child(even) { padding-left: 1.25rem; border-left: 1px solid var(--rule); }
+  .part .spec { font-family: Spectral, Georgia, serif; font-weight: 600; font-size: 1.15rem; display: block; margin-bottom: 0.25rem; }
+  .part p { color: var(--muted); font-size: 0.97rem; margin: 0; }
+  @media (max-width: 560px) { .parts { grid-template-columns: 1fr; } .part:nth-child(even) { padding-left: 0; border-left: 0; } }
+
+  /* build steps */
+  .steps { list-style: none; margin: 0; padding: 0; counter-reset: s; }
+  .steps li { counter-increment: s; display: grid; grid-template-columns: 3rem 1fr; gap: 0 0.5rem; padding: 0 0 1.5rem; position: relative; }
+  .steps li::before { content: counter(s, decimal-leading-zero); font-family: Spectral, Georgia, serif; font-weight: 600; font-size: 1.3rem; color: var(--sun); line-height: 1.3; }
+  .steps li:not(:last-child)::after { content: ""; position: absolute; left: 0.9rem; top: 2.1rem; bottom: 0.4rem; width: 1px; background: var(--rule); }
+  .steps p { margin: 0; color: var(--muted); font-size: 0.97rem; }
+
+  /* results table */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.97rem; }
+  th, td { text-align: left; padding: 0.7rem 0.9rem 0.7rem 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  th { font-weight: 600; border-bottom: 1px solid var(--ink); white-space: nowrap; }
+  td.num { font-variant-numeric: tabular-nums; }
+  .caption { color: var(--muted); font-size: 0.9rem; margin-top: 0.75rem; }
+
+  /* role, challenges */
+  .callout { border-left: 3px solid var(--sun); padding: 0.2rem 0 0.2rem 1.1rem; margin: 1.5rem 0; max-width: var(--measure); }
+  .callout p { font-family: Spectral, Georgia, serif; font-size: 1.25rem; line-height: 1.45; margin: 0; }
+  .pairs { display: grid; gap: 1.25rem; }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--rule); }
+  .pair .lbl { font-size: 0.85rem; color: var(--muted); display: block; margin-bottom: 0.2rem; }
+  .pair p { margin: 0; }
+  @media (max-width: 560px) { .pair { grid-template-columns: 1fr; gap: 0.6rem; } }
+  ul.plain { margin: 0; padding-left: 1.1rem; max-width: var(--measure); }
+  ul.plain li { margin: 0.35rem 0; }
+  ul.plain li::marker { color: var(--steel); }
+
+  /* gallery */
+  .gallery { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; }
+  .gallery figure { margin: 0; }
+  .gallery .ph { aspect-ratio: 4 / 3; background: var(--tint); border: 1px dashed var(--steel); display: grid; place-items: center; color: var(--muted); font-size: 0.85rem; text-align: center; padding: 0.5rem; }
+  .gallery img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; display: block; }
+  .gallery figure.big { grid-column: 1 / -1; }
+  .gallery figure.big .ph, .gallery figure.big img { aspect-ratio: 16 / 9; }
+  .gallery figcaption { font-size: 0.85rem; color: var(--muted); margin-top: 0.35rem; }
+  @media (max-width: 560px) { .gallery { grid-template-columns: 1fr 1fr; } }
+
+  /* documents */
+  .docs { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--rule); }
+  .docs li { border-bottom: 1px solid var(--rule); }
+  .docs a { display: grid; grid-template-columns: 3rem 1fr auto; align-items: center; gap: 0.75rem; padding: 0.95rem 0; text-decoration: none; }
+  .docs .type { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.05em; border: 1px solid var(--ink); text-align: center; padding: 0.15rem 0; }
+  .docs .name { font-weight: 500; }
+  .docs .name small { display: block; font-weight: 400; color: var(--muted); font-size: 0.88rem; }
+  .docs .go { color: var(--muted); }
+  .docs a:hover .name { text-decoration: underline; text-underline-offset: 0.2em; }
+
+  /* comparison cards and charge/discharge */
+  .vs { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.25rem 0 0; }
+  .vs > div { border: 1px solid var(--rule); border-top: 3px solid var(--ink); padding: 1rem 1.1rem 1.1rem; }
+  .vs .k { font-family: Spectral, Georgia, serif; font-weight: 600; font-size: 1.3rem; display: block; }
+  .vs .full { font-size: 0.85rem; color: var(--muted); display: block; margin-bottom: 0.5rem; }
+  .vs p { margin: 0; font-size: 0.97rem; }
+  .cd { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.5rem; }
+  .cd h3 { display: flex; align-items: center; gap: 0.5rem; }
+  .cd h3::before { content: ""; width: 0.75rem; height: 0.75rem; border-radius: 2px; background: #2E9E5B; }
+  .cd .out h3::before { background: #E0A100; }
+  .cd ol { margin: 0.5rem 0 0; padding-left: 1.2rem; }
+  .cd li { margin: 0.35rem 0; font-size: 0.97rem; }
+  @media (max-width: 560px) { .vs, .cd { grid-template-columns: 1fr; } }
+  .gallery.slides { grid-template-columns: repeat(2, 1fr); }
+  .gallery.slides img { aspect-ratio: 16 / 9; object-fit: contain; border: 1px solid var(--rule); background: var(--paper); }
+  .gallery.slides a { display: block; }
+  .sub-h { font-size: 1.07rem; font-weight: 600; margin: 2rem 0 0.5rem; }
+
+  /* next project + footer */
+  .next { margin: 4.5rem 0 0; padding: 1.5rem 0; border-top: 1px solid var(--ink); display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+  .next a { text-decoration: none; }
+  .next small { display: block; color: var(--muted); font-size: 0.85rem; }
+  .next strong { font-family: Spectral, Georgia, serif; font-size: 1.25rem; }
+  footer { padding: 2rem 0 3rem; border-top: 1px solid var(--rule); color: var(--muted); font-size: 0.95rem; }
+  footer p { margin: 0.3rem 0; }
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <header class="bar">
+    <a class="mark" href="../index.html">Saad Babezzine</a>
+    <a class="back" href="../index.html#projects">Back to all projects</a>
+  </header>
+
+  <div class="hero">
+    <p class="kicker">Team research project · Bunker Hill Community College · Fall 2025</p>
+    <h1>Solar Power for the Home</h1>
+    <p class="lede">I led a team of three that researched how a home solar power system works and presented it to our Circuit Analysis I class. I researched and presented the battery and control system, the part that decides when energy is stored and when it is used.</p>
+
+    <dl class="facts">
+      <div><dt>My role</dt><dd>Team lead</dd></div>
+      <div><dt>Team</dt><dd>3 students</dd></div>
+      <div><dt>My section</dt><dd>Battery and control</dd></div>
+      <div><dt>Presented</dt><dd>October 2025</dd></div>
+    </dl>
+  </div>
+</div>
+
+<!-- HOW IT WORKS: live simulation -->
+<div class="flow" aria-labelledby="flow-h">
+  <div class="wide">
+    <h2 id="flow-h">How the energy moves</h2>
+    <p class="sub">This is the system our presentation explained, as a live model. Drag through a full day or press play. The panel turns sunlight into DC power, the charge controller protects the battery, and the inverter turns stored DC into AC for the lights. Switch the loads on and off to watch the battery charge and discharge.</p>
+
+    <div class="sim">
+      <svg id="scene" viewBox="0 0 640 360" role="img" aria-label="Animated solar system: the sun moves across the sky, power flows from the panel through the charge controller to the battery, then through the inverter to the lights and laptop.">
+        <defs>
+          <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+            <stop id="skyTop" offset="0" stop-color="#7FB8F0"/>
+            <stop id="skyBot" offset="1" stop-color="#DCEEFF"/>
+          </linearGradient>
+          <radialGradient id="sunGlow">
+            <stop offset="0" stop-color="#FFD54A" stop-opacity="0.9"/>
+            <stop offset="1" stop-color="#FFD54A" stop-opacity="0"/>
+          </radialGradient>
+          <radialGradient id="bulbGlow">
+            <stop offset="0" stop-color="#FFE27A" stop-opacity="1"/>
+            <stop offset="1" stop-color="#FFE27A" stop-opacity="0"/>
+          </radialGradient>
+          <linearGradient id="cellGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#1E3A6B"/>
+            <stop offset="1" stop-color="#2F5EA8"/>
+          </linearGradient>
+          <clipPath id="battClip"><rect x="305" y="232" width="70" height="40" rx="3"/></clipPath>
+        </defs>
+
+        <rect width="640" height="360" fill="url(#sky)"/>
+        <g id="stars"></g>
+        <circle id="sunHalo" r="60" fill="url(#sunGlow)"/>
+        <circle id="sun" r="18" fill="#FFC21A"/>
+        <rect y="300" width="640" height="60" id="ground" fill="#6E8B4E"/>
+
+        <!-- panel on stand -->
+        <line x1="95" y1="250" x2="95" y2="302" stroke="#3A3A3A" stroke-width="4"/>
+        <line x1="70" y1="302" x2="120" y2="302" stroke="#3A3A3A" stroke-width="4"/>
+        <g transform="rotate(-18 95 215)">
+          <rect id="panel" x="40" y="195" width="110" height="46" fill="url(#cellGrad)" stroke="#111" stroke-width="2"/>
+          <path d="M67 195V241M95 195V241M122 195V241M40 218H150" stroke="#9DB8E8" stroke-width="1" opacity="0.7"/>
+          <rect id="panelShine" x="40" y="195" width="110" height="46" fill="#FFF6C8" opacity="0"/>
+        </g>
+
+        <!-- bench behind equipment so labels stay readable -->
+        <rect x="170" y="212" width="460" height="104" rx="12" fill="#FFFFFF" opacity="0.82"/>
+
+        <!-- wires (base) -->
+        <g fill="none" stroke-linecap="round" stroke-width="5" stroke="#C9C9C9">
+          <path id="w1" d="M140 236 Q160 252 190 252"/>
+          <path id="w2" d="M262 252 H305"/>
+          <path id="w3" d="M375 252 H420"/>
+          <path id="w4" d="M492 252 H520 Q532 252 532 240 V226 Q532 214 544 214 H556"/>
+          <path id="w5" d="M492 252 H520 Q532 252 532 264 V276 Q532 288 544 288 H560"/>
+        </g>
+        <g id="dots"></g>
+
+        <!-- charge controller -->
+        <rect x="190" y="232" width="72" height="40" rx="6" fill="#222"/>
+        <rect x="198" y="240" width="30" height="14" rx="2" fill="#0F3" opacity="0.15" id="ccScreen"/>
+        <text id="ccText" x="213" y="251" text-anchor="middle" class="lcd">0W</text>
+        <circle cx="246" cy="247" r="4" id="ccLed" fill="#2E9E5B"/>
+
+        <!-- battery -->
+        <rect x="305" y="232" width="70" height="40" rx="3" fill="#F2F2F2" stroke="#222" stroke-width="2"/>
+        <rect x="318" y="226" width="10" height="6" fill="#222"/>
+        <rect x="352" y="226" width="10" height="6" fill="#222"/>
+        <g clip-path="url(#battClip)"><rect id="battFill" x="305" y="232" width="42" height="40" fill="#2E9E5B"/></g>
+        <text id="battText" x="340" y="257" text-anchor="middle" class="batt">60%</text>
+
+        <!-- inverter -->
+        <rect x="420" y="232" width="72" height="40" rx="6" fill="#222"/>
+        <path d="M432 246h18M432 254h18" stroke="#EEE" stroke-width="2"/>
+        <path d="M460 252q5 -10 10 0t10 0" stroke="#7FB2FF" stroke-width="2" fill="none"/>
+
+        <!-- lights -->
+        <circle id="glow" cx="572" cy="210" r="46" fill="url(#bulbGlow)" opacity="0"/>
+        <circle id="bulb" cx="572" cy="210" r="13" fill="#EEE" stroke="#222" stroke-width="2"/>
+        <rect x="566" y="222" width="12" height="8" fill="#555"/>
+        <!-- laptop -->
+        <rect id="screen" x="562" y="276" width="34" height="22" rx="2" fill="#333" stroke="#222" stroke-width="2"/>
+        <rect x="556" y="298" width="46" height="5" rx="2" fill="#222"/>
+
+        <!-- labels -->
+        <g class="lbl" text-anchor="middle">
+          <text x="95" y="330">Panel</text>
+          <text x="226" y="296">Controller</text>
+          <text x="340" y="296">Battery</text>
+          <text x="456" y="296">Inverter</text>
+          <text x="572" y="176" class="sm">Lights</text>
+          <text x="579" y="326" class="sm">Laptop</text>
+        </g>
+        <g class="tag">
+          <text x="283" y="243" text-anchor="middle" fill="#D9480F">DC</text>
+          <text x="398" y="243" text-anchor="middle" fill="#2E9E5B">DC</text>
+          <text x="506" y="243" text-anchor="middle" fill="#2F6FDE">AC</text>
+        </g>
+        <text id="clock" x="620" y="34" text-anchor="end" class="clock">12:00</text>
+      </svg>
+
+      <div class="controls">
+        <button type="button" id="play" class="btn" aria-pressed="true">Pause</button>
+        <label class="time">
+          <span>Time of day</span>
+          <input type="range" id="time" min="0" max="24" step="0.05" value="12" aria-label="Time of day">
+        </label>
+        <div class="loads" role="group" aria-label="Loads">
+          <button type="button" class="chip" data-load="lights" aria-pressed="true">Lights 20 W</button>
+          <button type="button" class="chip" data-load="laptop" aria-pressed="false">Laptop 45 W</button>
+        </div>
+      </div>
+
+      <dl class="readout">
+        <div><dt>Sunlight</dt><dd id="rSun">100%</dd></div>
+        <div><dt>Panel output</dt><dd id="rPanel" class="c-dc">90 W</dd></div>
+        <div><dt>Load</dt><dd id="rLoad" class="c-ac">20 W</dd></div>
+        <div><dt>Battery</dt><dd id="rBatt" class="c-batt">60%</dd></div>
+      </dl>
+      <p class="status" id="status" aria-live="polite">Charging. The panel makes more power than the load uses.</p>
+    </div>
+    <p class="simnote">An interactive model I built for this page using example ratings (a 100 W panel and a 12 V, 35 Ah battery). It shows how the parts behave, not measurements from a real build.</p>
+  </div>
+</div>
+
+<script>
+(() => {
+  const RATED = 100, DERATE = 0.9, CAP_WH = 12 * 35, INV_EFF = 0.9, INV_IDLE = 5;
+  const LOADS = { lights: 20, laptop: 45 };
+  const S = { t: 12, play: true, soc: 0.6, on: { lights: true, laptop: false }, cutoff: false };
+  const $ = id => document.getElementById(id);
+  const svgNS = 'http://www.w3.org/2000/svg';
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduce) S.play = false;
+
+  // stars
+  const stars = $('stars');
+  for (let i = 0; i < 40; i++) {
+    const c = document.createElementNS(svgNS, 'circle');
+    c.setAttribute('cx', (i * 97) % 640); c.setAttribute('cy', 10 + (i * 53) % 170);
+    c.setAttribute('r', i % 5 ? 1 : 1.6); c.setAttribute('fill', '#FFF');
+    stars.appendChild(c);
+  }
+
+  // current dots along each wire
+  const wires = [
+    { id: 'w1', color: '#D9480F' }, { id: 'w2', color: '#D9480F' },
+    { id: 'w3', color: '#2E9E5B' }, { id: 'w4', color: '#2F6FDE' }, { id: 'w5', color: '#2F6FDE' }
+  ].map(w => {
+    const path = $(w.id), len = path.getTotalLength(), n = Math.max(2, Math.round(len / 14));
+    const dots = [];
+    for (let i = 0; i < n; i++) {
+      const c = document.createElementNS(svgNS, 'circle');
+      c.setAttribute('r', 3.2); c.setAttribute('fill', w.color);
+      $('dots').appendChild(c); dots.push(c);
+    }
+    return { ...w, path, len, dots, phase: 0, power: 0 };
+  });
+
+  const mix = (a, b, k) => {
+    const pa = a.match(/\w\w/g).map(h => parseInt(h, 16)), pb = b.match(/\w\w/g).map(h => parseInt(h, 16));
+    return '#' + pa.map((v, i) => Math.round(v + (pb[i] - v) * k).toString(16).padStart(2, '0')).join('');
+  };
+  const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+  const sunFrac = t => (t > 6 && t < 18) ? Math.sin(Math.PI * (t - 6) / 12) : 0;
+
+  function step(dtHours) {
+    const irr = sunFrac(S.t);
+    const avail = RATED * DERATE * irr;
+    let ac = (S.on.lights ? LOADS.lights : 0) + (S.on.laptop ? LOADS.laptop : 0);
+    let invIn = ac > 0 ? ac / INV_EFF + INV_IDLE : 0;
+
+    // low voltage cutoff with a little hysteresis
+    if (S.soc <= 0.1 && avail < invIn) S.cutoff = true;
+    if (S.cutoff && S.soc > 0.2) S.cutoff = false;
+    if (S.cutoff) { ac = 0; invIn = 0; }
+
+    const full = S.soc >= 0.999;
+    const panelUsed = full ? Math.min(avail, invIn) : avail;
+    const net = panelUsed - invIn;
+    S.soc = clamp(S.soc + net * dtHours / CAP_WH, 0.08, 1);
+    return { irr, avail, panelUsed, ac, invIn, net, full };
+  }
+
+  function render(m, dtSec) {
+    const d = clamp(m.irr * 2.2, 0, 1);
+    const dusk = (S.t > 5 && S.t < 19) ? clamp(1 - m.irr * 3, 0, 1) * (m.irr > 0 || Math.abs(S.t - 6) < 1 || Math.abs(S.t - 18) < 1 ? 1 : 0) : 0;
+    $('skyTop').setAttribute('stop-color', mix('0B1626', '6FAEEB', d));
+    $('skyBot').setAttribute('stop-color', mix(mix('1E2D4A', 'DCEEFF', d), 'F6A65A', dusk * 0.85));
+    $('ground').setAttribute('fill', mix('1F2A1C', '6E8B4E', d));
+    stars.setAttribute('opacity', (1 - d).toFixed(2));
+
+    // sun arc
+    const th = Math.PI * (S.t - 6) / 12;
+    const sx = 320 - 270 * Math.cos(th), sy = 300 - 250 * Math.sin(th);
+    const vis = S.t > 5.6 && S.t < 18.4;
+    ['sun', 'sunHalo'].forEach(id => { const e = $(id); e.setAttribute('cx', sx); e.setAttribute('cy', sy); e.setAttribute('opacity', vis ? 1 : 0); });
+    $('sun').setAttribute('fill', mix('FF7A1A', 'FFC21A', clamp(m.irr * 2, 0, 1)));
+    $('panelShine').setAttribute('opacity', (m.irr * 0.35).toFixed(2));
+
+    // equipment
+    $('ccText').textContent = Math.round(m.panelUsed) + 'W';
+    $('ccLed').setAttribute('fill', S.cutoff ? '#D62828' : (m.full ? '#2F6FDE' : (m.panelUsed > 1 ? '#2E9E5B' : '#777')));
+    const pct = Math.round(S.soc * 100);
+    $('battFill').setAttribute('width', (70 * S.soc).toFixed(1));
+    $('battFill').setAttribute('fill', S.soc > 0.5 ? '#2E9E5B' : S.soc > 0.2 ? '#E0A100' : '#D62828');
+    $('battText').textContent = pct + '%';
+    const lit = S.on.lights && !S.cutoff;
+    $('glow').setAttribute('opacity', lit ? 0.95 : 0);
+    $('bulb').setAttribute('fill', lit ? '#FFE27A' : '#EEE');
+    $('screen').setAttribute('fill', S.on.laptop && !S.cutoff ? '#9CC7FF' : '#333');
+    const hh = Math.floor(S.t) % 24, mm = Math.floor((S.t % 1) * 60);
+    $('clock').textContent = String(hh).padStart(2, '0') + ':' + String(mm).padStart(2, '0');
+    $('clock').setAttribute('fill', d > 0.5 ? '#0B1626' : '#FFFFFF');
+
+    // wire flows
+    const flows = [m.panelUsed, m.panelUsed, m.invIn,
+                   S.on.lights && !S.cutoff ? LOADS.lights : 0,
+                   S.on.laptop && !S.cutoff ? LOADS.laptop : 0];
+    wires.forEach((w, i) => {
+      const p = flows[i];
+      const speed = p > 0.5 ? 18 + Math.min(p, 100) * 1.1 : 0;
+      if (!reduce) w.phase = (w.phase + speed * dtSec) % 14;
+      const op = p > 0.5 ? clamp(0.35 + p / 80, 0.35, 1) : 0;
+      w.dots.forEach((c, k) => {
+        const L = (k * 14 + w.phase) % w.len, pt = w.path.getPointAtLength(L);
+        c.setAttribute('cx', pt.x); c.setAttribute('cy', pt.y); c.setAttribute('opacity', op);
+      });
+    });
+
+    // readouts
+    $('rSun').textContent = Math.round(m.irr * 100) + '%';
+    $('rPanel').textContent = Math.round(m.panelUsed) + ' W';
+    $('rLoad').textContent = Math.round(m.ac) + ' W';
+    const sign = m.net > 0.5 ? ' (+' + Math.round(m.net) + ' W)' : m.net < -0.5 ? ' (' + Math.round(m.net) + ' W)' : '';
+    $('rBatt').textContent = pct + '%' + sign;
+
+    let msg;
+    if (S.cutoff) msg = 'Low battery. The controller disconnects the load to protect the battery until the sun recharges it.';
+    else if (m.full && m.avail > m.invIn + 1) msg = 'Battery full. The controller limits the panel so the battery is not overcharged.';
+    else if (m.net > 0.5) msg = 'Charging. The panel makes more power than the load uses.';
+    else if (m.net < -0.5 && m.panelUsed > 1) msg = 'The panel helps, but the load needs more, so the battery covers the rest.';
+    else if (m.net < -0.5) msg = 'No sun. Everything runs from the battery.';
+    else msg = 'Idle. Nothing is charging or drawing power.';
+    if ($('status').textContent !== msg) $('status').textContent = msg;
+  }
+
+  // controls
+  const time = $('time'), play = $('play');
+  time.addEventListener('input', () => { S.t = parseFloat(time.value); });
+  play.addEventListener('click', () => {
+    S.play = !S.play; play.textContent = S.play ? 'Pause' : 'Play a day';
+    play.setAttribute('aria-pressed', S.play);
+  });
+  if (!S.play) play.textContent = 'Play a day';
+  document.querySelectorAll('.chip').forEach(b => b.addEventListener('click', () => {
+    const k = b.dataset.load; S.on[k] = !S.on[k]; b.setAttribute('aria-pressed', S.on[k]);
+  }));
+
+  // loop: one simulated day every 32 seconds
+  let last = performance.now();
+  function frame(now) {
+    const dt = Math.min(0.1, (now - last) / 1000); last = now;
+    const hours = S.play ? dt * 0.75 : dt * 0.02;
+    if (S.play) { S.t = (S.t + hours) % 24; time.value = S.t.toFixed(2); }
+    render(step(hours), dt);
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+
+<div class="wrap">
+  <main>
+
+    <section aria-labelledby="why-h">
+      <h2 id="why-h">Why home solar</h2>
+      <p>The average American household uses more electricity every year, and utility customers end up paying for that growth. Large renewable projects cannot always match conventional plants in volume, but a home solar setup lets a household make its own power and save money over time. That gap is why our team chose domestic solar as our topic.</p>
+    </section>
+
+    <section aria-labelledby="parts-h">
+      <h2 id="parts-h">The four parts of a home system</h2>
+      <div class="parts">
+        <div class="part"><span class="spec">Solar panels</span><p>Sunlight excites electrons in a semiconductor layer inside each photovoltaic cell, and that charge is collected as DC voltage.</p></div>
+        <div class="part"><span class="spec">Charge controller</span><p>Sits between the panel and the battery and controls how the battery charges and discharges.</p></div>
+        <div class="part"><span class="spec">Battery bank</span><p>Stores the DC energy as chemical energy until the home needs it.</p></div>
+        <div class="part"><span class="spec">Inverter</span><p>Uses a switch and an oscillating signal to turn DC into AC, so the power works with home appliances and the grid. Excess power can go back to the grid through the meter.</p></div>
+      </div>
+    </section>
+
+    <section aria-labelledby="mine-h">
+      <h2 id="mine-h">My section: the battery and control system</h2>
+      <p>The panels make power only when the sun is out, but a home needs power all day. The charge controller and battery solve that problem, and this is the part of the presentation I researched and presented.</p>
+
+      <p class="sub-h">Two types of charge controller</p>
+      <div class="vs">
+        <div><span class="k">PWM</span><span class="full">Pulse Width Modulation</span><p>Connects the panel directly to the battery and switches the current on and off quickly to control the voltage. Simple and low cost.</p></div>
+        <div><span class="k">MPPT</span><span class="full">Maximum Power Point Tracking</span><p>Uses a DC to DC converter to adjust voltage and current so the panel always delivers as much power as it can. More efficient, especially when the panel voltage is well above the battery voltage.</p></div>
+      </div>
+
+      <div class="cd">
+        <div class="in">
+          <h3>When the battery charges</h3>
+          <ol>
+            <li>The panel turns sunlight into DC electricity.</li>
+            <li>When the panel voltage is higher than the battery voltage, current flows into the battery.</li>
+            <li>Electrical energy is stored as chemical energy, and the battery voltage rises.</li>
+            <li>The charge controller limits the current so the battery is not overcharged.</li>
+          </ol>
+        </div>
+        <div class="out">
+          <h3>When the battery discharges</h3>
+          <ol>
+            <li>When the sun is gone or the panel voltage drops below the battery, current flows out of the battery.</li>
+            <li>Stored chemical energy turns back into electrical energy and powers the load.</li>
+            <li>The battery voltage slowly drops.</li>
+            <li>The charge controller stops a deep discharge to protect the battery's life.</li>
+          </ol>
+        </div>
+      </div>
+      <p class="caption">You can watch both of these happen in the model above. Play through a day and look at the status line under it.</p>
+
+      <p class="sub-h">Connecting batteries in series or parallel</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th></th><th>Series</th><th>Parallel</th></tr></thead>
+          <tbody>
+            <tr><td>How they connect</td><td>Positive of one battery to negative of the next</td><td>Positive to positive, negative to negative</td></tr>
+            <tr><td>Voltage</td><td class="num">Adds up, 12 V + 12 V = 24 V</td><td class="num">Stays at 12 V</td></tr>
+            <tr><td>Capacity</td><td>Stays the same</td><td class="num">Adds up, 100 Ah + 100 Ah = 200 Ah</td></tr>
+            <tr><td>Stored energy</td><td>Increases because voltage increases</td><td>Increases because capacity increases</td></tr>
+            <tr><td>Best for</td><td>A system that needs a higher voltage</td><td>Longer backup time</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="caption">Either way, stored energy is <i>E</i> = <i>V</i> × <i>Ah</i>. Two 12 V, 100 Ah batteries hold 2.4 kWh in series or in parallel. Only the voltage and current change.</p>
+    </section>
+
+    <section aria-labelledby="problems-h">
+      <h2 id="problems-h">What can go wrong, and how to prevent it</h2>
+      <div class="pairs">
+        <div class="pair">
+          <div><span class="lbl">Weather</span><p>Clouds, rain, seasons, dust, and shade all cut panel output, which slows battery charging.</p></div>
+          <div><span class="lbl">Prevention</span><p>Clean the panels regularly and size the battery to cover days with less sun.</p></div>
+        </div>
+        <div class="pair">
+          <div><span class="lbl">Temperature</span><p>Heat lowers panel voltage and shortens battery life, and cold slows battery charging.</p></div>
+          <div><span class="lbl">Prevention</span><p>Give the equipment good ventilation and protect the battery from extreme temperatures.</p></div>
+        </div>
+        <div class="pair">
+          <div><span class="lbl">Wear</span><p>Connections corrode and parts get damaged over time.</p></div>
+          <div><span class="lbl">Prevention</span><p>Check wiring for corrosion, inspect the controller and battery levels, and replace damaged parts early.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="role-h">
+      <h2 id="role-h">Leading the team</h2>
+      <p>I divided the topic into three sections so each person owned one part, set check ins so we caught problems early, and made sure the sections connected into one story from sunlight to the outlet.</p>
+      <div class="callout"><p>Leading means checking in early, matching tasks to people's strengths, and keeping everyone on one plan.</p></div>
+    </section>
+
+    <section aria-labelledby="learned-h">
+      <h2 id="learned-h">What I learned</h2>
+      <ul class="plain">
+        <li>How a home power system fits together, from generation to storage to the load and the grid.</li>
+        <li>Why the charge controller matters as much as the panel, and when MPPT is worth it over PWM.</li>
+        <li>How series and parallel connections change voltage and capacity, which is the same thinking used in larger power distribution.</li>
+        <li>How to lead a team and turn three people's research into one clear presentation.</li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="slides-h">
+      <h2 id="slides-h">From the presentation</h2>
+      <div class="gallery slides">
+        <figure><a href="solar/presentation.pdf"><img src="solar/slide-6.jpg" alt="Slide introducing the battery and control system section"></a><figcaption>My section of the presentation.</figcaption></figure>
+        <figure><a href="solar/presentation.pdf"><img src="solar/slide-8.jpg" alt="Slide comparing PWM and MPPT charge controllers"></a><figcaption>PWM and MPPT charge controllers.</figcaption></figure>
+        <figure><a href="solar/presentation.pdf"><img src="solar/slide-12.jpg" alt="Slide explaining how a battery charges"></a><figcaption>How a battery charges.</figcaption></figure>
+        <figure><a href="solar/presentation.pdf"><img src="solar/slide-14.jpg" alt="Slide with a table comparing series and parallel battery connections"></a><figcaption>Series and parallel connections.</figcaption></figure>
+      </div>
+    </section>
+
+    <section aria-labelledby="docs-h">
+      <h2 id="docs-h">Documents</h2>
+      <ul class="docs">
+        <li><a href="solar/presentation.pdf"><span class="type">PDF</span><span class="name">Full presentation<small>Solar Power Generation for Domestic Use, 18 slides with references</small></span><span class="go">Open</span></a></li>
+      </ul>
+    </section>
+
+    <nav class="next" aria-label="More projects">
+      <a href="../index.html#projects"><small>Back</small><strong>All projects</strong></a>
+    </nav>
+  </main>
+
+  <footer>
+    <p>Questions about this project? Email me at <a href="mailto:saadbabezzine@gmail.com">saadbabezzine@gmail.com</a> or find me on <a href="https://www.linkedin.com/in/saadbabezzine/" target="_blank" rel="noopener">LinkedIn</a>.</p>
+    <p>Saad Babezzine, Boston, MA</p>
+  </footer>
+</div>
+</body>
+</html>
