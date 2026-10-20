@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Power Quality Harmonic Analyzer | Saad Babezzine</title>
+<meta name="description" content="Power Quality Harmonic Analyzer, a project by Saad Babezzine. Full project page coming soon.">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600&family=Spectral:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root { --paper:#FFFFFF; --ink:#000000; --muted:#555555; --rule:#D9D9D9; --steel:#8C8C8C; --live:#B3261E; --sun:#E09A00; color-scheme: light; }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin:0; background:var(--paper); color:var(--ink); font:400 1.0625rem/1.65 "Public Sans", system-ui, sans-serif; min-height:100vh; display:flex; flex-direction:column; }
+  .wrap { max-width:46rem; margin:0 auto; padding:0 1.25rem; width:100%; }
+  a { color:var(--ink); text-underline-offset:0.2em; text-decoration-thickness:1.5px; }
+  a:hover { color:var(--muted); }
+  a:focus-visible { outline:2px solid var(--ink); outline-offset:3px; border-radius:2px; }
+  .bar { display:flex; justify-content:space-between; align-items:baseline; gap:1rem; padding:1.5rem 0 0; flex-wrap:wrap; }
+  .bar .mark { font-family:Spectral, Georgia, serif; font-weight:600; font-size:1.1rem; text-decoration:none; }
+  .bar .back { text-decoration:none; color:var(--muted); font-size:0.95rem; }
+  .bar .back:hover { color:var(--ink); }
+  main { flex:1; }
+  .soon { padding:4.5rem 0 2rem; }
+  .status { display:inline-flex; align-items:center; gap:0.55rem; font-size:0.85rem; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:var(--live); margin:0 0 1rem; }
+  .status .dot { width:0.6rem; height:0.6rem; border-radius:50%; background:var(--live); animation:pulse 1.6s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { box-shadow:0 0 0 0 rgba(179,38,30,0.45); } 50% { box-shadow:0 0 0 7px rgba(179,38,30,0); } }
+  h1 { font-family:Spectral, Georgia, serif; font-weight:600; font-size:clamp(2.3rem, 7vw, 3.6rem); line-height:1.04; letter-spacing:-0.015em; margin:0 0 0.5rem; }
+  .where { color:var(--muted); margin:0; }
+  figure { margin:2.75rem 0 2.25rem; padding:1.5rem 0; border-top:1px solid var(--rule); border-bottom:1px solid var(--rule); }
+  figure svg { width:100%; height:auto; display:block; overflow:visible; }
+  .line { font-family:Spectral, Georgia, serif; font-weight:600; font-size:clamp(1.5rem, 4.5vw, 2rem); line-height:1.25; margin:0 0 0.75rem; }
+  .line .cursor { display:inline-block; width:0.08em; height:1em; background:var(--live); margin-left:0.12em; vertical-align:-0.12em; animation:blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity:0; } }
+  .sub { max-width:40rem; color:var(--muted); margin:0 0 2rem; }
+  .actions { display:flex; gap:1.5rem; flex-wrap:wrap; font-weight:500; }
+
+  /* drawing */
+  .sig { fill:none; stroke:var(--ink); stroke-width:2.5; stroke-linejoin:round; }
+  .sig.red, .coil.red { stroke:var(--live); }
+  .wire { fill:none; stroke:var(--ink); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  .dev { fill:var(--paper); stroke:var(--ink); stroke-width:2.5; stroke-linejoin:round; }
+  .coil { fill:none; stroke:var(--ink); stroke-width:2.5; stroke-linecap:round; }
+  .core { fill:#EDEDED; stroke:var(--ink); stroke-width:2; }
+  .hole { fill:var(--paper); stroke:var(--ink); stroke-width:2; }
+  .flux { fill:none; stroke:var(--steel); stroke-width:1.5; stroke-dasharray:6 6; animation:flow 1.2s linear infinite; }
+  .axis { stroke:var(--rule); stroke-width:1.5; }
+  rect.eqbar { fill:var(--ink); transform-box:fill-box; transform-origin:bottom; animation:eq 1.8s ease-in-out infinite; }
+  rect.eqbar.red { fill:var(--live); }
+  .track { fill:none; stroke:var(--rule); stroke-width:1.5; stroke-dasharray:4 6; }
+  .swing { transform-origin:240px 170px; animation:swing 7s ease-in-out infinite alternate; }
+  .sun { fill:var(--sun); }
+  .beam { stroke:var(--sun); stroke-width:2; stroke-dasharray:3 6; animation:flow 0.9s linear infinite reverse; }
+  .panel { fill:#1E3A6B; stroke:var(--ink); stroke-width:1.5; }
+  .pivot { fill:var(--ink); }
+  .sym { font:600 18px "Public Sans", sans-serif; fill:var(--ink); }
+  .note { font:400 13px "Public Sans", sans-serif; fill:var(--muted); }
+  .mv { animation-name:scroll; }
+  @keyframes scroll { from { transform:translateX(0); } to { transform:translateX(calc(-1 * var(--p))); } }
+  @keyframes flow { to { stroke-dashoffset:-24; } }
+  @keyframes eq { 0%,100% { transform:scaleY(1); } 50% { transform:scaleY(0.78); } }
+  @keyframes swing { from { transform:rotate(-55deg); } to { transform:rotate(55deg); } }
+  @media (prefers-reduced-motion: reduce) { *, *::before { animation:none !important; } }
+
+  footer { padding:2rem 0 3rem; border-top:1px solid var(--rule); color:var(--muted); font-size:0.95rem; margin-top:3rem; }
+  footer p { margin:0.3rem 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="bar">
+    <a class="mark" href="../index.html">Saad Babezzine</a>
+    <a class="back" href="../index.html#projects">Back to all projects</a>
+  </header>
+</div>
+
+<main class="wrap">
+  <div class="soon">
+    <p class="status"><span class="dot" aria-hidden="true"></span>Page in progress</p>
+    <h1>Power Quality Harmonic Analyzer</h1>
+    <p class="where">Signals and Systems, UMass Boston</p>
+
+    <figure>
+      <svg viewBox="0 0 480 200" role="img" aria-label="A distorted wave breaking into harmonic bars">
+      
+      <clipPath id="hin"><rect x="10" y="30" width="220" height="140"/></clipPath>
+      <g clip-path="url(#hin)"><path class="sig mv" style="--p:110px;animation:scroll 3s linear infinite" d="M-100.0 100.0 L-98.0 84.0 L-96.0 71.5 L-94.0 64.7 L-92.0 63.4 L-90.0 65.5 L-88.0 68.3 L-86.0 69.8 L-84.0 69.5 L-82.0 68.3 L-80.0 67.5 L-78.0 67.8 L-76.0 69.1 L-74.0 70.4 L-72.0 70.8 L-70.0 69.9 L-68.0 68.4 L-66.0 67.5 L-64.0 67.8 L-62.0 69.0 L-60.0 69.9 L-58.0 69.3 L-56.0 67.0 L-54.0 64.2 L-52.0 63.5 L-50.0 67.4 L-48.0 77.1 L-46.0 91.7 L-44.0 108.3 L-42.0 122.9 L-40.0 132.6 L-38.0 136.5 L-36.0 135.8 L-34.0 133.0 L-32.0 130.7 L-30.0 130.1 L-28.0 131.0 L-26.0 132.2 L-24.0 132.5 L-22.0 131.6 L-20.0 130.1 L-18.0 129.2 L-16.0 129.6 L-14.0 130.9 L-12.0 132.2 L-10.0 132.5 L-8.0 131.7 L-6.0 130.5 L-4.0 130.2 L-2.0 131.7 L0.0 134.5 L2.0 136.6 L4.0 135.3 L6.0 128.5 L8.0 116.0 L10.0 100.0 L12.0 84.0 L14.0 71.5 L16.0 64.7 L18.0 63.4 L20.0 65.5 L22.0 68.3 L24.0 69.8 L26.0 69.5 L28.0 68.3 L30.0 67.5 L32.0 67.8 L34.0 69.1 L36.0 70.4 L38.0 70.8 L40.0 69.9 L42.0 68.4 L44.0 67.5 L46.0 67.8 L48.0 69.0 L50.0 69.9 L52.0 69.3 L54.0 67.0 L56.0 64.2 L58.0 63.5 L60.0 67.4 L62.0 77.1 L64.0 91.7 L66.0 108.3 L68.0 122.9 L70.0 132.6 L72.0 136.5 L74.0 135.8 L76.0 133.0 L78.0 130.7 L80.0 130.1 L82.0 131.0 L84.0 132.2 L86.0 132.5 L88.0 131.6 L90.0 130.1 L92.0 129.2 L94.0 129.6 L96.0 130.9 L98.0 132.2 L100.0 132.5 L102.0 131.7 L104.0 130.5 L106.0 130.2 L108.0 131.7 L110.0 134.5 L112.0 136.6 L114.0 135.3 L116.0 128.5 L118.0 116.0 L120.0 100.0 L122.0 84.0 L124.0 71.5 L126.0 64.7 L128.0 63.4 L130.0 65.5 L132.0 68.3 L134.0 69.8 L136.0 69.5 L138.0 68.3 L140.0 67.5 L142.0 67.8 L144.0 69.1 L146.0 70.4 L148.0 70.8 L150.0 69.9 L152.0 68.4 L154.0 67.5 L156.0 67.8 L158.0 69.0 L160.0 69.9 L162.0 69.3 L164.0 67.0 L166.0 64.2 L168.0 63.5 L170.0 67.4 L172.0 77.1 L174.0 91.7 L176.0 108.3 L178.0 122.9 L180.0 132.6 L182.0 136.5 L184.0 135.8 L186.0 133.0 L188.0 130.7 L190.0 130.1 L192.0 131.0 L194.0 132.2 L196.0 132.5 L198.0 131.6 L200.0 130.1 L202.0 129.2 L204.0 129.6 L206.0 130.9 L208.0 132.2 L210.0 132.5 L212.0 131.7 L214.0 130.5 L216.0 130.2 L218.0 131.7 L220.0 134.5 L222.0 136.6 L224.0 135.3 L226.0 128.5 L228.0 116.0 L230.0 100.0 L232.0 84.0 L234.0 71.5 L236.0 64.7 L238.0 63.4 L240.0 65.5 L242.0 68.3 L244.0 69.8 L246.0 69.5 L248.0 68.3 L250.0 67.5 L252.0 67.8 L254.0 69.1 L256.0 70.4 L258.0 70.8 L260.0 69.9 L262.0 68.4 L264.0 67.5 L266.0 67.8 L268.0 69.0 L270.0 69.9 L272.0 69.3 L274.0 67.0 L276.0 64.2 L278.0 63.5 L280.0 67.4 L282.0 77.1 L284.0 91.7 L286.0 108.3 L288.0 122.9 L290.0 132.6 L292.0 136.5 L294.0 135.8 L296.0 133.0 L298.0 130.7 L300.0 130.1 L302.0 131.0 L304.0 132.2 L306.0 132.5 L308.0 131.6 L310.0 130.1 L312.0 129.2 L314.0 129.6 L316.0 130.9 L318.0 132.2 L320.0 132.5 L322.0 131.7 L324.0 130.5 L326.0 130.2 L328.0 131.7 L330.0 134.5 L332.0 136.6 L334.0 135.3 L336.0 128.5 L338.0 116.0 L340.0 100.0"/></g>
+      <path class="wire arrow" d="M240 100 H272 m-8 -6 l8 6 l-8 6"/>
+      <line class="axis" x1="292" y1="160" x2="470" y2="160"/>
+      <rect class="eqbar" x="300" y="50" width="26" height="110" style="animation-delay:0.0s"/><text class="note" x="313" y="180" text-anchor="middle">1</text><rect class="eqbar red" x="342" y="120" width="26" height="40" style="animation-delay:0.25s"/><text class="note" x="355" y="180" text-anchor="middle">3</text><rect class="eqbar red" x="384" y="138" width="26" height="22" style="animation-delay:0.5s"/><text class="note" x="397" y="180" text-anchor="middle">5</text><rect class="eqbar red" x="426" y="147" width="26" height="13" style="animation-delay:0.75s"/><text class="note" x="439" y="180" text-anchor="middle">7</text>
+      <text class="note" x="120" y="185" text-anchor="middle">distorted current</text>
+      <text class="note" x="384" y="198" text-anchor="middle">harmonics</text>
+      </svg>
+    </figure>
+
+    <p class="line">Still separating the signal from the noise.<span class="cursor" aria-hidden="true"></span></p>
+    <p class="sub">This project is in progress. The page will show how Fourier analysis in MATLAB breaks the current from everyday electronics into harmonics, and how much distortion they put back on the line. The full project page is coming soon.</p>
+    <div class="actions">
+      <a href="../index.html#projects">See my other projects</a>
+      <a href="solar-power-system.html">Read the solar project</a>
+    </div>
+  </div>
+</main>
+
+<div class="wrap">
+  <footer>
+    <p>Want to hear about this project before the page is ready? Email me at <a href="mailto:saadbabezzine@gmail.com">saadbabezzine@gmail.com</a> or find me on <a href="https://www.linkedin.com/in/saadbabezzine/" target="_blank" rel="noopener">LinkedIn</a>.</p>
+    <p>Saad Babezzine, Boston, MA</p>
+  </footer>
+</div>
+</body>
+</html>

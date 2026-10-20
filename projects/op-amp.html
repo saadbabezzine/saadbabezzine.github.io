@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Op Amp Amplifier Design and Testing | Saad Babezzine</title>
+<meta name="description" content="Op Amp Amplifier Design and Testing, a project by Saad Babezzine. Full project page coming soon.">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600&family=Spectral:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root { --paper:#FFFFFF; --ink:#000000; --muted:#555555; --rule:#D9D9D9; --steel:#8C8C8C; --live:#B3261E; --sun:#E09A00; color-scheme: light; }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin:0; background:var(--paper); color:var(--ink); font:400 1.0625rem/1.65 "Public Sans", system-ui, sans-serif; min-height:100vh; display:flex; flex-direction:column; }
+  .wrap { max-width:46rem; margin:0 auto; padding:0 1.25rem; width:100%; }
+  a { color:var(--ink); text-underline-offset:0.2em; text-decoration-thickness:1.5px; }
+  a:hover { color:var(--muted); }
+  a:focus-visible { outline:2px solid var(--ink); outline-offset:3px; border-radius:2px; }
+  .bar { display:flex; justify-content:space-between; align-items:baseline; gap:1rem; padding:1.5rem 0 0; flex-wrap:wrap; }
+  .bar .mark { font-family:Spectral, Georgia, serif; font-weight:600; font-size:1.1rem; text-decoration:none; }
+  .bar .back { text-decoration:none; color:var(--muted); font-size:0.95rem; }
+  .bar .back:hover { color:var(--ink); }
+  main { flex:1; }
+  .soon { padding:4.5rem 0 2rem; }
+  .status { display:inline-flex; align-items:center; gap:0.55rem; font-size:0.85rem; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:var(--live); margin:0 0 1rem; }
+  .status .dot { width:0.6rem; height:0.6rem; border-radius:50%; background:var(--live); animation:pulse 1.6s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { box-shadow:0 0 0 0 rgba(179,38,30,0.45); } 50% { box-shadow:0 0 0 7px rgba(179,38,30,0); } }
+  h1 { font-family:Spectral, Georgia, serif; font-weight:600; font-size:clamp(2.3rem, 7vw, 3.6rem); line-height:1.04; letter-spacing:-0.015em; margin:0 0 0.5rem; }
+  .where { color:var(--muted); margin:0; }
+  figure { margin:2.75rem 0 2.25rem; padding:1.5rem 0; border-top:1px solid var(--rule); border-bottom:1px solid var(--rule); }
+  figure svg { width:100%; height:auto; display:block; overflow:visible; }
+  .line { font-family:Spectral, Georgia, serif; font-weight:600; font-size:clamp(1.5rem, 4.5vw, 2rem); line-height:1.25; margin:0 0 0.75rem; }
+  .line .cursor { display:inline-block; width:0.08em; height:1em; background:var(--live); margin-left:0.12em; vertical-align:-0.12em; animation:blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity:0; } }
+  .sub { max-width:40rem; color:var(--muted); margin:0 0 2rem; }
+  .actions { display:flex; gap:1.5rem; flex-wrap:wrap; font-weight:500; }
+
+  /* drawing */
+  .sig { fill:none; stroke:var(--ink); stroke-width:2.5; stroke-linejoin:round; }
+  .sig.red, .coil.red { stroke:var(--live); }
+  .wire { fill:none; stroke:var(--ink); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  .dev { fill:var(--paper); stroke:var(--ink); stroke-width:2.5; stroke-linejoin:round; }
+  .coil { fill:none; stroke:var(--ink); stroke-width:2.5; stroke-linecap:round; }
+  .core { fill:#EDEDED; stroke:var(--ink); stroke-width:2; }
+  .hole { fill:var(--paper); stroke:var(--ink); stroke-width:2; }
+  .flux { fill:none; stroke:var(--steel); stroke-width:1.5; stroke-dasharray:6 6; animation:flow 1.2s linear infinite; }
+  .axis { stroke:var(--rule); stroke-width:1.5; }
+  rect.eqbar { fill:var(--ink); transform-box:fill-box; transform-origin:bottom; animation:eq 1.8s ease-in-out infinite; }
+  rect.eqbar.red { fill:var(--live); }
+  .track { fill:none; stroke:var(--rule); stroke-width:1.5; stroke-dasharray:4 6; }
+  .swing { transform-origin:240px 170px; animation:swing 7s ease-in-out infinite alternate; }
+  .sun { fill:var(--sun); }
+  .beam { stroke:var(--sun); stroke-width:2; stroke-dasharray:3 6; animation:flow 0.9s linear infinite reverse; }
+  .panel { fill:#1E3A6B; stroke:var(--ink); stroke-width:1.5; }
+  .pivot { fill:var(--ink); }
+  .sym { font:600 18px "Public Sans", sans-serif; fill:var(--ink); }
+  .note { font:400 13px "Public Sans", sans-serif; fill:var(--muted); }
+  .mv { animation-name:scroll; }
+  @keyframes scroll { from { transform:translateX(0); } to { transform:translateX(calc(-1 * var(--p))); } }
+  @keyframes flow { to { stroke-dashoffset:-24; } }
+  @keyframes eq { 0%,100% { transform:scaleY(1); } 50% { transform:scaleY(0.78); } }
+  @keyframes swing { from { transform:rotate(-55deg); } to { transform:rotate(55deg); } }
+  @media (prefers-reduced-motion: reduce) { *, *::before { animation:none !important; } }
+
+  footer { padding:2rem 0 3rem; border-top:1px solid var(--rule); color:var(--muted); font-size:0.95rem; margin-top:3rem; }
+  footer p { margin:0.3rem 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="bar">
+    <a class="mark" href="../index.html">Saad Babezzine</a>
+    <a class="back" href="../index.html#projects">Back to all projects</a>
+  </header>
+</div>
+
+<main class="wrap">
+  <div class="soon">
+    <p class="status"><span class="dot" aria-hidden="true"></span>Page in progress</p>
+    <h1>Op Amp Amplifier Design and Testing</h1>
+    <p class="where">Electronics I, UMass Boston</p>
+
+    <figure>
+      <svg viewBox="0 0 480 200" role="img" aria-label="An op amp turning a small input wave into a large inverted output">
+      
+      <clipPath id="oin"><rect x="10" y="40" width="130" height="120"/></clipPath>
+      <g clip-path="url(#oin)"><path class="sig red mv" style="--p:64px;animation:scroll 2.4s linear infinite" d="M-54.0 100.0 L-52.0 98.0 L-50.0 96.2 L-48.0 94.4 L-46.0 92.9 L-44.0 91.7 L-42.0 90.8 L-40.0 90.2 L-38.0 90.0 L-36.0 90.2 L-34.0 90.8 L-32.0 91.7 L-30.0 92.9 L-28.0 94.4 L-26.0 96.2 L-24.0 98.0 L-22.0 100.0 L-20.0 102.0 L-18.0 103.8 L-16.0 105.6 L-14.0 107.1 L-12.0 108.3 L-10.0 109.2 L-8.0 109.8 L-6.0 110.0 L-4.0 109.8 L-2.0 109.2 L0.0 108.3 L2.0 107.1 L4.0 105.6 L6.0 103.8 L8.0 102.0 L10.0 100.0 L12.0 98.0 L14.0 96.2 L16.0 94.4 L18.0 92.9 L20.0 91.7 L22.0 90.8 L24.0 90.2 L26.0 90.0 L28.0 90.2 L30.0 90.8 L32.0 91.7 L34.0 92.9 L36.0 94.4 L38.0 96.2 L40.0 98.0 L42.0 100.0 L44.0 102.0 L46.0 103.8 L48.0 105.6 L50.0 107.1 L52.0 108.3 L54.0 109.2 L56.0 109.8 L58.0 110.0 L60.0 109.8 L62.0 109.2 L64.0 108.3 L66.0 107.1 L68.0 105.6 L70.0 103.8 L72.0 102.0 L74.0 100.0 L76.0 98.0 L78.0 96.2 L80.0 94.4 L82.0 92.9 L84.0 91.7 L86.0 90.8 L88.0 90.2 L90.0 90.0 L92.0 90.2 L94.0 90.8 L96.0 91.7 L98.0 92.9 L100.0 94.4 L102.0 96.2 L104.0 98.0 L106.0 100.0 L108.0 102.0 L110.0 103.8 L112.0 105.6 L114.0 107.1 L116.0 108.3 L118.0 109.2 L120.0 109.8 L122.0 110.0 L124.0 109.8 L126.0 109.2 L128.0 108.3 L130.0 107.1 L132.0 105.6 L134.0 103.8 L136.0 102.0 L138.0 100.0 L140.0 98.0 L142.0 96.2 L144.0 94.4 L146.0 92.9 L148.0 91.7 L150.0 90.8 L152.0 90.2 L154.0 90.0 L156.0 90.2 L158.0 90.8 L160.0 91.7 L162.0 92.9 L164.0 94.4 L166.0 96.2 L168.0 98.0 L170.0 100.0 L172.0 102.0 L174.0 103.8 L176.0 105.6 L178.0 107.1 L180.0 108.3 L182.0 109.2 L184.0 109.8 L186.0 110.0 L188.0 109.8 L190.0 109.2 L192.0 108.3 L194.0 107.1 L196.0 105.6 L198.0 103.8 L200.0 102.0 L202.0 100.0 L204.0 98.0"/></g>
+      <clipPath id="oout"><rect x="330" y="20" width="140" height="160"/></clipPath>
+      <g clip-path="url(#oout)"><path class="sig mv" style="--p:64px;animation:scroll 2.4s linear infinite" d="M266.0 100.0 L268.0 109.0 L270.0 117.6 L272.0 125.6 L274.0 132.5 L276.0 138.2 L278.0 142.5 L280.0 145.1 L282.0 146.0 L284.0 145.1 L286.0 142.5 L288.0 138.2 L290.0 132.5 L292.0 125.6 L294.0 117.6 L296.0 109.0 L298.0 100.0 L300.0 91.0 L302.0 82.4 L304.0 74.4 L306.0 67.5 L308.0 61.8 L310.0 57.5 L312.0 54.9 L314.0 54.0 L316.0 54.9 L318.0 57.5 L320.0 61.8 L322.0 67.5 L324.0 74.4 L326.0 82.4 L328.0 91.0 L330.0 100.0 L332.0 109.0 L334.0 117.6 L336.0 125.6 L338.0 132.5 L340.0 138.2 L342.0 142.5 L344.0 145.1 L346.0 146.0 L348.0 145.1 L350.0 142.5 L352.0 138.2 L354.0 132.5 L356.0 125.6 L358.0 117.6 L360.0 109.0 L362.0 100.0 L364.0 91.0 L366.0 82.4 L368.0 74.4 L370.0 67.5 L372.0 61.8 L374.0 57.5 L376.0 54.9 L378.0 54.0 L380.0 54.9 L382.0 57.5 L384.0 61.8 L386.0 67.5 L388.0 74.4 L390.0 82.4 L392.0 91.0 L394.0 100.0 L396.0 109.0 L398.0 117.6 L400.0 125.6 L402.0 132.5 L404.0 138.2 L406.0 142.5 L408.0 145.1 L410.0 146.0 L412.0 145.1 L414.0 142.5 L416.0 138.2 L418.0 132.5 L420.0 125.6 L422.0 117.6 L424.0 109.0 L426.0 100.0 L428.0 91.0 L430.0 82.4 L432.0 74.4 L434.0 67.5 L436.0 61.8 L438.0 57.5 L440.0 54.9 L442.0 54.0 L444.0 54.9 L446.0 57.5 L448.0 61.8 L450.0 67.5 L452.0 74.4 L454.0 82.4 L456.0 91.0 L458.0 100.0 L460.0 109.0 L462.0 117.6 L464.0 125.6 L466.0 132.5 L468.0 138.2 L470.0 142.5 L472.0 145.1 L474.0 146.0 L476.0 145.1 L478.0 142.5 L480.0 138.2 L482.0 132.5 L484.0 125.6 L486.0 117.6 L488.0 109.0 L490.0 100.0 L492.0 91.0 L494.0 82.4 L496.0 74.4 L498.0 67.5 L500.0 61.8 L502.0 57.5 L504.0 54.9 L506.0 54.0 L508.0 54.9 L510.0 57.5 L512.0 61.8 L514.0 67.5 L516.0 74.4 L518.0 82.4 L520.0 91.0 L522.0 100.0 L524.0 109.0 L526.0 117.6 L528.0 125.6 L530.0 132.5 L532.0 138.2 L534.0 142.5"/></g>
+      <path class="wire" d="M140 100 H190 M290 100 H330 M170 100 V40 H220 M250 40 H310 V100"/>
+      <path class="wire" d="M220 40 l4 -7 l7 14 l7 -14 l7 14 l5 -7"/>
+      <path class="dev" d="M190 60 V140 L290 100 Z"/>
+      <text class="sym" x="200" y="92">−</text><text class="sym" x="200" y="120">+</text>
+      <path class="wire" d="M190 126 H175 V150"/><path class="wire" d="M167 150 H183 M170 155 H180 M173 160 H177"/>
+      <text class="note" x="75" y="185" text-anchor="middle">small signal in</text>
+      <text class="note" x="400" y="190" text-anchor="middle">gain of −10 out</text>
+      </svg>
+    </figure>
+
+    <p class="line">Still amplifying the details.<span class="cursor" aria-hidden="true"></span></p>
+    <p class="sub">This page will show the inverting and noninverting LM741 amplifiers I built, the bandwidth I measured at three gains, and where the output starts to clip. The full project page is coming soon.</p>
+    <div class="actions">
+      <a href="../index.html#projects">See my other projects</a>
+      <a href="solar-power-system.html">Read the solar project</a>
+    </div>
+  </div>
+</main>
+
+<div class="wrap">
+  <footer>
+    <p>Want to hear about this project before the page is ready? Email me at <a href="mailto:saadbabezzine@gmail.com">saadbabezzine@gmail.com</a> or find me on <a href="https://www.linkedin.com/in/saadbabezzine/" target="_blank" rel="noopener">LinkedIn</a>.</p>
+    <p>Saad Babezzine, Boston, MA</p>
+  </footer>
+</div>
+</body>
+</html>
