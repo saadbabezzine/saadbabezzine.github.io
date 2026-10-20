@@ -68,9 +68,53 @@
   .oneline .bus { stroke: var(--ink); stroke-width: 5; stroke-linecap: round; }
   .oneline text { fill: var(--ink); font: 500 15px "Public Sans", sans-serif; }
   .oneline .note { fill: var(--muted); font-weight: 400; font-size: 13px; }
-  .oneline .draw { stroke-dasharray: 900; stroke-dashoffset: 900; animation: energize 1.6s ease-out 0.3s forwards; }
+  .oneline .arrow { stroke: var(--steel); stroke-width: 2; fill: none; transition: stroke .25s; }
+  .oneline .sine { fill: none; stroke: var(--ink); stroke-width: 1.8; animation: osc .9s linear infinite; }
+  .oneline .blade { stroke: var(--ink); stroke-width: 2.5; stroke-linecap: round; transform-box: view-box; transform-origin: var(--pv, 157px 75px); }
+  .oneline .narrow .blade { --pv: 67px 75px; }
+  .oneline .pin { fill: var(--ink); }
+  .oneline .pulse { fill: none; stroke: #FF3B30; stroke-width: 3.5; stroke-linecap: round; stroke-dasharray: 5 21; opacity: 0; filter: drop-shadow(0 0 4px rgba(255,59,48,.95)); }
+
+  /* power up sequence */
+  .oneline .blade { animation: close .5s cubic-bezier(.5,1.6,.5,1) .25s both; }
+  .oneline .draw { stroke-dasharray: 900; stroke-dashoffset: 900; animation: energize 1.1s ease-in .75s forwards; }
+  .oneline .bus { animation: busflash .9s ease-out 1.75s both; }
+  .oneline .drawb { stroke-dasharray: 120; stroke-dashoffset: 120; animation: energize .55s ease-out forwards; }
+  .oneline .br text { opacity: 0; animation: label .6s ease-out forwards; }
+  .oneline .br .arrow { opacity: 0; animation: fadein .3s ease-out forwards; }
+  .oneline .b1 > * { animation-delay: 1.95s; } .oneline .b1 text { animation-delay: 2.2s; }
+  .oneline .b2 > * { animation-delay: 2.15s; } .oneline .b2 text { animation-delay: 2.4s; }
+  .oneline .b3 > * { animation-delay: 2.35s; } .oneline .b3 text { animation-delay: 2.6s; }
+  .oneline .br .arrow { animation-delay: inherit; }
+  .oneline .b1 .arrow { animation-delay: 2.3s; } .oneline .b2 .arrow { animation-delay: 2.5s; } .oneline .b3 .arrow { animation-delay: 2.7s; }
+
+  /* always live afterwards */
+  .oneline .pulse { animation: flow .55s linear infinite, fadein .4s ease-out forwards; animation-delay: 0s, 1.85s; }
+  .oneline .br .pulse { animation-delay: 0s, 2.9s; }
+  .oneline .xf2 { animation: hum 2.4s ease-in-out 2s infinite; }
+  .oneline .src { animation: hum 2.4s ease-in-out 2.4s infinite; }
+
+  /* hover a branch to light it up */
+  .oneline .br { cursor: default; }
+  .oneline .br text { transition: fill .25s; }
+  .oneline .br:hover text { fill: var(--live); }
+  .oneline .br:hover .arrow { stroke: var(--live); }
+  .oneline .br:hover .pulse { stroke-width: 4.5; animation-duration: .25s, .4s; }
+
   @keyframes energize { to { stroke-dashoffset: 0; } }
-  @media (prefers-reduced-motion: reduce) { .oneline .draw { animation: none; stroke-dashoffset: 0; } }
+  @keyframes close { from { transform: rotate(-38deg); } to { transform: rotate(0); } }
+  @keyframes busflash { 0% { stroke: var(--ink); filter: none; } 35% { stroke: var(--live); filter: drop-shadow(0 0 6px rgba(255,59,48,.9)); } 100% { stroke: var(--ink); filter: none; } }
+  @keyframes label { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: none; } }
+  @keyframes fadein { to { opacity: 1; } }
+  @keyframes flow { to { stroke-dashoffset: -26.1; } }
+  @keyframes osc { to { transform: translateX(calc(-1 * var(--p))); } }
+  @keyframes hum { 0%, 100% { stroke: var(--ink); } 50% { stroke: var(--live); } }
+  @media (prefers-reduced-motion: reduce) {
+    .oneline * { animation: none !important; }
+    .oneline .draw, .oneline .drawb { stroke-dashoffset: 0; }
+    .oneline .br text, .oneline .br .arrow { opacity: 1; }
+    .oneline .pulse { opacity: 0; }
+  }
   .oneline .narrow { display: none; }
   @media (max-width: 560px) {
     .oneline .wide { display: none; }
@@ -145,40 +189,45 @@
 
       <figure class="oneline" aria-hidden="true">
         <svg class="wide" viewBox="0 0 680 150" role="presentation">
-          <!-- source -->
-          <circle class="dev" cx="24" cy="75" r="18"/>
-          <path class="wire" d="M15 75 q4.5 -8 9 0 t9 0"/>
-          <!-- energized feeder -->
+          <defs><clipPath id="srcW"><circle cx="24" cy="75" r="15"/></clipPath></defs>
+          <!-- source with a running sine wave -->
+          <circle class="dev src" cx="24" cy="75" r="18"/>
+          <g clip-path="url(#srcW)"><path class="sine" style="--p:18px" d="M-12.0 75.0 L-10.5 72.5 L-9.0 70.7 L-7.5 70.0 L-6.0 70.7 L-4.5 72.5 L-3.0 75.0 L-1.5 77.5 L0.0 79.3 L1.5 80.0 L3.0 79.3 L4.5 77.5 L6.0 75.0 L7.5 72.5 L9.0 70.7 L10.5 70.0 L12.0 70.7 L13.5 72.5 L15.0 75.0 L16.5 77.5 L18.0 79.3 L19.5 80.0 L21.0 79.3 L22.5 77.5 L24.0 75.0 L25.5 72.5 L27.0 70.7 L28.5 70.0 L30.0 70.7 L31.5 72.5 L33.0 75.0 L34.5 77.5 L36.0 79.3 L37.5 80.0 L39.0 79.3 L40.5 77.5 L42.0 75.0 L43.5 72.5 L45.0 70.7 L46.5 70.0 L48.0 70.7 L49.5 72.5 L51.0 75.0 L52.5 77.5 L54.0 79.3 L55.5 80.0 L57.0 79.3 L58.5 77.5 L60.0 75.0"/></g>
+          <!-- feeder: base, energize sweep, live pulses -->
           <path class="live draw" d="M42 75 H150 M190 75 H232 M268 75 H330"/>
-          <!-- breaker -->
-          <rect class="dev" x="150" y="63" width="40" height="24"/>
+          <path class="pulse feed" d="M42 75 H150 M190 75 H232 M268 75 H330"/>
+          <!-- breaker with a blade that swings closed -->
+          <rect class="dev brk" x="150" y="63" width="40" height="24"/>
+          <line class="blade" x1="157" y1="75" x2="183" y2="75"/>
+          <circle class="pin" cx="157" cy="75" r="2.5"/><circle class="pin" cx="183" cy="75" r="2.5"/>
           <!-- transformer -->
           <circle class="dev" cx="243" cy="75" r="15"/>
-          <circle class="dev" cx="257" cy="75" r="15" style="fill:none"/>
+          <circle class="dev xf2" cx="257" cy="75" r="15" style="fill:none"/>
           <!-- bus -->
           <line class="bus" x1="330" y1="22" x2="330" y2="128"/>
-          <path class="live draw" d="M330 30 H430 M330 75 H430 M330 120 H430"/>
-          <path class="wire" d="M422 24 l8 6 l-8 6 M422 69 l8 6 l-8 6 M422 114 l8 6 l-8 6"/>
-          <text x="444" y="35">Power distribution</text>
-          <text x="444" y="80">Circuit design and testing</text>
-          <text x="444" y="125">MEP electrical design</text>
+          <!-- branches -->
+          <g class="br b1"><path class="live drawb" d="M330 30 H430"/><path class="pulse" d="M330 30 H430"/><path class="arrow" d="M422 24 l8 6 l-8 6"/><text x="444" y="35">Power distribution</text></g>
+          <g class="br b2"><path class="live drawb" d="M330 75 H430"/><path class="pulse" d="M330 75 H430"/><path class="arrow" d="M422 69 l8 6 l-8 6"/><text x="444" y="80">Circuit design and testing</text></g>
+          <g class="br b3"><path class="live drawb" d="M330 120 H430"/><path class="pulse" d="M330 120 H430"/><path class="arrow" d="M422 114 l8 6 l-8 6"/><text x="444" y="125">MEP electrical design</text></g>
           <text class="note" x="24" y="117" text-anchor="middle">source</text>
           <text class="note" x="170" y="117" text-anchor="middle">breaker</text>
           <text class="note" x="250" y="117" text-anchor="middle">transformer</text>
         </svg>
         <svg class="narrow" viewBox="0 0 380 150" role="presentation">
-          <circle class="dev" cx="20" cy="75" r="15"/>
-          <path class="wire" d="M12 75 q4 -7 8 0 t8 0"/>
+          <defs><clipPath id="srcN"><circle cx="20" cy="75" r="12.5"/></clipPath></defs>
+          <circle class="dev src" cx="20" cy="75" r="15"/>
+          <g clip-path="url(#srcN)"><path class="sine" style="--p:15px" d="M-10.0 75.0 L-8.5 72.6 L-7.0 71.2 L-5.5 71.2 L-4.0 72.6 L-2.5 75.0 L-1.0 77.4 L0.5 78.8 L2.0 78.8 L3.5 77.4 L5.0 75.0 L6.5 72.6 L8.0 71.2 L9.5 71.2 L11.0 72.6 L12.5 75.0 L14.0 77.4 L15.5 78.8 L17.0 78.8 L18.5 77.4 L20.0 75.0 L21.5 72.6 L23.0 71.2 L24.5 71.2 L26.0 72.6 L27.5 75.0 L29.0 77.4 L30.5 78.8 L32.0 78.8 L33.5 77.4 L35.0 75.0 L36.5 72.6 L38.0 71.2 L39.5 71.2 L41.0 72.6 L42.5 75.0 L44.0 77.4 L45.5 78.8 L47.0 78.8 L48.5 77.4 L50.0 75.0"/></g>
           <path class="live draw" d="M35 75 H62 M92 75 H108 M138 75 H168"/>
-          <rect class="dev" x="62" y="65" width="30" height="20"/>
+          <path class="pulse feed" d="M35 75 H62 M92 75 H108 M138 75 H168"/>
+          <rect class="dev brk" x="62" y="65" width="30" height="20"/>
+          <line class="blade" x1="67" y1="75" x2="87" y2="75"/>
+          <circle class="pin" cx="67" cy="75" r="2"/><circle class="pin" cx="87" cy="75" r="2"/>
           <circle class="dev" cx="117" cy="75" r="12"/>
-          <circle class="dev" cx="129" cy="75" r="12" style="fill:none"/>
+          <circle class="dev xf2" cx="129" cy="75" r="12" style="fill:none"/>
           <line class="bus" x1="168" y1="22" x2="168" y2="128"/>
-          <path class="live draw" d="M168 30 H212 M168 75 H212 M168 120 H212"/>
-          <path class="wire" d="M205 24 l7 6 l-7 6 M205 69 l7 6 l-7 6 M205 114 l7 6 l-7 6"/>
-          <text x="220" y="35">Power distribution</text>
-          <text x="220" y="80">Circuit design</text>
-          <text x="220" y="125">MEP design</text>
+          <g class="br b1"><path class="live drawb" d="M168 30 H212"/><path class="pulse" d="M168 30 H212"/><path class="arrow" d="M205 24 l7 6 l-7 6"/><text x="220" y="35">Power distribution</text></g>
+          <g class="br b2"><path class="live drawb" d="M168 75 H212"/><path class="pulse" d="M168 75 H212"/><path class="arrow" d="M205 69 l7 6 l-7 6"/><text x="220" y="80">Circuit design</text></g>
+          <g class="br b3"><path class="live drawb" d="M168 120 H212"/><path class="pulse" d="M168 120 H212"/><path class="arrow" d="M205 114 l7 6 l-7 6"/><text x="220" y="125">MEP design</text></g>
         </svg>
       </figure>
     </div>
