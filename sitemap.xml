@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <url>
+    <loc>https://saadbabezzine.com/</loc>
+    <image:image><image:loc>https://saadbabezzine.com/saad-babezzine.jpg</image:loc></image:image>
+  </url>
+  <url>
+    <loc>https://saadbabezzine.com/about.html</loc>
+    <image:image><image:loc>https://saadbabezzine.com/saad-babezzine.jpg</image:loc></image:image>
+  </url>
+  <url><loc>https://saadbabezzine.com/projects/solar-power-system.html</loc></url>
+  <url>
+    <loc>https://saadbabezzine.com/projects/ring.html</loc>
+    <image:image><image:loc>https://saadbabezzine.com/projects/ring/ring-finished.jpg</image:loc></image:image>
+  </url>
+  <url><loc>https://saadbabezzine.com/projects/transformer.html</loc></url>
+  <url><loc>https://saadbabezzine.com/projects/op-amp.html</loc></url>
+  <url><loc>https://saadbabezzine.com/projects/harmonic-analyzer.html</loc></url>
+  <url><loc>https://saadbabezzine.com/projects/dc-power-supply.html</loc></url>
+  <url><loc>https://saadbabezzine.com/projects/solar-tracker.html</loc></url>
+</urlset>
