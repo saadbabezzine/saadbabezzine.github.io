@@ -18,7 +18,7 @@
   '#sb-lock.sb-out{opacity:0;pointer-events:none}' +
   '#sb-lock .sb-card{width:100%;max-width:26rem;text-align:center}' +
   '#sb-lock .sb-name{font-family:Spectral,Georgia,serif;font-weight:600;font-size:clamp(2rem,8vw,2.75rem);line-height:1.05;margin:0 0 .4rem;letter-spacing:-.01em}' +
-  '#sb-lock .sb-sub{color:#555;margin:0 0 1.6rem;font-size:.97rem}' +
+  '#sb-lock .sb-sub{color:#555;margin:0 auto 1.6rem;font-size:1rem;line-height:1.55;max-width:24rem}' +
   '#sb-lock svg{width:100%;max-width:22rem;height:auto;display:block;margin:0 auto 1.6rem;overflow:visible}' +
   '#sb-lock .w{stroke:#8C8C8C;stroke-width:2;fill:none}' +
   '#sb-lock .d{stroke:#000;stroke-width:2;fill:#fff}' +
@@ -63,7 +63,7 @@
     wrap.innerHTML =
       '<div class="sb-card">' +
         '<p class="sb-name" id="sb-lock-title">Saad Babezzine</p>' +
-        '<p class="sb-sub">Enter the passcode to switch the power on.</p>' +
+        '<p class="sb-sub">Want to see Saad\'s website, his projects and his story? Enter the name of the person he loves the most to switch the power on.</p>' +
         '<svg viewBox="0 0 300 80" aria-hidden="true">' +
           '<circle class="d" cx="22" cy="40" r="15"/><path class="w" d="M14 40 q4 -7 8 0 t8 0"/>' +
           '<path class="w" d="M37 40 H112 M146 40 H246"/>' +
@@ -115,7 +115,7 @@
         }, 900);
       } else {
         wrap.classList.remove('sb-bad'); void wrap.offsetWidth; wrap.classList.add('sb-bad');
-        msg.textContent = 'Wrong passcode. Try again.';
+        msg.textContent = 'Not quite. Try again.';
         setTimeout(function () { input.value = ''; render(); }, 450);
       }
     }
