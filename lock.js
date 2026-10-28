@@ -96,7 +96,7 @@
     document.body.appendChild(wrap);
 
     var input = wrap.querySelector('input'), cells = wrap.querySelectorAll('.sb-box'), msg = wrap.querySelector('.sb-msg');
-    var busy = false;
+    var busy = false, fails = 0;
     function render() {
       var v = input.value;
       for (var i = 0; i < LEN; i++) {
@@ -113,12 +113,13 @@
       if (busy) return;
       input.value = input.value.replace(/[^a-zA-Z]/g, '').slice(0, LEN);
       wrap.classList.remove('sb-bad');
-      msg.textContent = '6 letters';
+      if (!fails) msg.textContent = '6 letters';
       render();
       if (input.value.length === LEN) check();
     });
     function check() {
-      if (fnv(input.value.toLowerCase() + ':saadbabezzine') === HASH) {
+      var shown = input.value.toLowerCase().split('').reverse().join(''); /* what the boxes display, left to right */
+      if (fnv(shown + ':saadbabezzine') === HASH) {
         busy = true; input.blur();
         wrap.classList.add('sb-ok'); msg.textContent = 'Power on. Welcome.';
         remember();
@@ -129,7 +130,8 @@
         }, 900);
       } else {
         wrap.classList.remove('sb-bad'); void wrap.offsetWidth; wrap.classList.add('sb-bad');
-        msg.textContent = 'Not quite. Try again.';
+        fails++;
+        msg.textContent = fails >= 4 ? 'Hint: watch where each letter lands.' : fails >= 2 ? 'Hint: the boxes have to spell the name.' : 'Not quite. Try again.';
         setTimeout(function () { input.value = ''; render(); }, 450);
       }
     }
