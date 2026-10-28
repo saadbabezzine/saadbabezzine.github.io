@@ -99,10 +99,11 @@
     var busy = false, fails = 0;
     function render() {
       var v = input.value;
-      for (var i = 0; i < LEN; i++) {
-        var j = LEN - 1 - i; /* letters fill from right to left */
-        cells[j].textContent = v[i] || '';
-        cells[j].className = 'sb-box' + (v[i] ? ' on sb-pop' : '') + (i === v.length && document.activeElement === input ? ' cur' : '');
+      var r = v.split('').reverse().join(''); /* newest letter jumps in on the left and pushes the rest right */
+      var active = document.activeElement === input && v.length < LEN;
+      for (var k = 0; k < LEN; k++) {
+        cells[k].textContent = r[k] || '';
+        cells[k].className = 'sb-box' + (r[k] ? ' on' : '') + (k === 0 && v.length ? ' sb-pop' : '') + (k === 0 && active ? ' cur' : '');
       }
     }
     function focus() { try { input.focus({ preventScroll: true }); } catch (e) { input.focus(); } render(); }
