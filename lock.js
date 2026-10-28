@@ -133,7 +133,8 @@
         wrap.classList.remove('sb-bad'); void wrap.offsetWidth; wrap.classList.add('sb-bad');
         fails++;
         msg.textContent = fails >= 4 ? 'Hint: watch where each letter lands.' : fails >= 2 ? 'Hint: the boxes have to spell the name.' : 'Not quite. Try again.';
-        setTimeout(function () { input.value = ''; render(); }, 450);
+        busy = true;
+        setTimeout(function () { input.value = ''; busy = false; render(); }, 1100);
       }
     }
     focus();
