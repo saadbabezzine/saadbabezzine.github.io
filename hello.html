@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Access Denied</title>
+<style>
+  :root { --red: #FF2B3A; --red2: #FF6B75; --ink: #FFECEE; --muted: #C99AA0; --bg: #070304; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); }
+  body { font: 400 1.0625rem/1.65 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--ink); overflow: hidden; }
+
+  /* animated red grid floor */
+  .floor { position: fixed; left: -50%; right: -50%; bottom: -10%; height: 60%;
+    background-image:
+      linear-gradient(rgba(255,43,58,.55) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,43,58,.55) 1px, transparent 1px);
+    background-size: 60px 60px;
+    transform: perspective(420px) rotateX(62deg);
+    transform-origin: top center;
+    animation: roll 2.4s linear infinite;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 35%);
+            mask-image: linear-gradient(to bottom, transparent 0%, #000 35%); }
+  .horizon { position: fixed; left: 0; right: 0; top: 50%; height: 2px; background: var(--red); box-shadow: 0 0 18px 3px rgba(255,43,58,.6); opacity: .8; }
+  .glow { position: fixed; inset: 0; background: radial-gradient(ellipse at 50% 45%, rgba(255,43,58,.14), transparent 60%); pointer-events: none; }
+  .scan { position: fixed; inset: 0; background: repeating-linear-gradient(to bottom, rgba(255,255,255,.025) 0 1px, transparent 1px 3px); pointer-events: none; }
+
+  .stage { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; padding: 1.25rem; }
+  .card { position: relative; width: 100%; max-width: 30rem; text-align: center; padding: 2.2rem 1.75rem 2rem;
+    background: rgba(18,4,6,.72); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+    border: 1px solid rgba(255,43,58,.45); border-radius: 14px;
+    box-shadow: 0 0 40px rgba(255,43,58,.22), 0 20px 60px rgba(0,0,0,.7);
+    animation: in .7s cubic-bezier(.2,.8,.2,1) both; }
+  .card::before, .card::after { content: ""; position: absolute; width: 22px; height: 22px; border: 2px solid var(--red); filter: drop-shadow(0 0 4px var(--red)); }
+  .card::before { top: -1px; left: -1px; border-right: 0; border-bottom: 0; border-top-left-radius: 14px; }
+  .card::after { bottom: -1px; right: -1px; border-left: 0; border-top: 0; border-bottom-right-radius: 14px; }
+
+  .lock { width: 64px; height: 64px; margin: 0 auto 1rem; display: block; overflow: visible; }
+  .lock .ring { fill: none; stroke: var(--red); stroke-width: 2; opacity: .35; }
+  .lock .body { fill: rgba(255,43,58,.12); stroke: var(--red); stroke-width: 2.5; filter: drop-shadow(0 0 6px var(--red)); }
+  .lock .shackle { fill: none; stroke: var(--red); stroke-width: 2.5; stroke-linecap: round; }
+  .lock .dot { fill: var(--red); animation: blink 1.2s steps(1) infinite; }
+
+  .code { font: 600 .78rem ui-monospace, Menlo, Consolas, monospace; letter-spacing: .28em; color: var(--red); margin: 0 0 .9rem; text-shadow: 0 0 8px rgba(255,43,58,.7); }
+  h1 { font: 700 clamp(1.45rem, 5.5vw, 1.9rem)/1.2 Georgia, "Times New Roman", serif; margin: 0 0 1rem; color: #fff; text-shadow: 0 0 16px rgba(255,43,58,.45); }
+  p { margin: 0 auto .7rem; max-width: 25rem; color: var(--muted); }
+  .final { margin-top: 1.3rem; padding-top: 1.1rem; border-top: 1px solid rgba(255,43,58,.25);
+    font: 600 .95rem ui-monospace, Menlo, Consolas, monospace; letter-spacing: .08em; color: var(--red2); text-transform: uppercase; }
+
+  @keyframes roll { to { background-position: 0 60px; } }
+  @keyframes in { from { opacity: 0; transform: translateY(10px) scale(.98); } to { opacity: 1; transform: none; } }
+  @keyframes blink { 50% { opacity: .15; } }
+  @media (prefers-reduced-motion: reduce) { .floor, .card, .lock .dot { animation: none; } }
+</style>
+</head>
+<body>
+  <div class="glow"></div>
+  <div class="horizon"></div>
+  <div class="floor"></div>
+  <div class="scan"></div>
+
+  <main class="stage">
+    <div class="card" role="alert">
+      <svg class="lock" viewBox="0 0 64 64" aria-hidden="true">
+        <circle class="ring" cx="32" cy="34" r="30"/>
+        <path class="shackle" d="M22 28 V20 a10 10 0 0 1 20 0 V28"/>
+        <rect class="body" x="16" y="28" width="32" height="24" rx="4"/>
+        <circle class="dot" cx="32" cy="40" r="3"/>
+      </svg>
+      <p class="code">ACCESS DENIED</p>
+      <h1>Why are you trying to access my website?</h1>
+      <p>You are not authorized to view this site, given the unclear relationship between us.</p>
+      <p>I won't say goodbye, because I don't like you.</p>
+      <p class="final">Your access has been permanently blocked.</p>
+    </div>
+  </main>
+</body>
+</html>
